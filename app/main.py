@@ -1,7 +1,8 @@
 import json
 import os
-
 import bottle
+
+from copy import deepcopy
 
 from api import ping_response, start_response, move_response, end_response
 
@@ -60,7 +61,7 @@ def can_escape(board, pos, gone):
         return True
 
     for tile in available:
-        if can_escape(board, tile, gone):
+        if can_escape(board, tile, deepcopy(gone)):
             return True
     
     return False
