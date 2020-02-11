@@ -1,7 +1,8 @@
 import json
 import os
-
 import bottle
+
+from copy import copy
 
 from api import ping_response, start_response, move_response, end_response
 
@@ -60,7 +61,7 @@ def can_escape(board, pos, gone):
         return True
 
     for tile in available:
-        if can_escape(board, tile, gone):
+        if can_escape(board, tile, copy(gone)):
             return True
     
     return False
@@ -120,11 +121,6 @@ def move():
     TODO: Using the data from the endpoint request object, your
             snake AI must choose a direction to move in.
     """
-    
-    print("Test data start\n")
-    the_object = data.get("game").get("id")
-    print(the_object)
-    print("Test data end\n")
 
     current_pos = data.get("you").get("body")[0]
     down = dict(x=current_pos.get("x"), y=current_pos.get("y") + 1)
