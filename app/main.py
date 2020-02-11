@@ -6,16 +6,10 @@ from copy import copy
 
 from api import ping_response, start_response, move_response, end_response
 
-# Global Variables
-direction = None
-
-def print_error(code):
-    print("Error: " + str(code))
-
-# Returns true if this position will kill the snake
+# Returns True if this position will kill the snake
 def will_collide(board, pos, gone):
     
-    # Check walls
+    # Check wall collisions
     if  (
         pos.get("x") < 0 
         or pos.get("y") < 0
@@ -24,28 +18,33 @@ def will_collide(board, pos, gone):
         ):
         return True
     
+    # Check tiles eliminated by other functions for collisions
     for tile in gone:
         if(tile == pos):
             return True
 
-    # Check snakes
+    # Check snakes for collisions
     for snake in board.get("snakes"):
         for tile in snake.get("body"):
             if tile == pos:
                 return True
     
+    # If no collisions, return False
     return False
 
-# Check if snake can escape from tile - throws error 1
+# Check if snake can escape from tile
 def can_escape(board, pos, gone):
+
+    # Store number of blocked tiles and list of available tiles
     blocked = 0
     available = []
-    # Find number of blocked tiles
+
     down = dict(x=pos.get("x"), y=pos.get("y") + 1)
     up = dict(x=pos.get("x"), y=pos.get("y") - 1)
     right = dict(x=pos.get("x") + 1, y=pos.get("y"))
     left = dict(x=pos.get("x") - 1, y=pos.get("y"))
 
+   # Find blocked and available tiles
     if will_collide(board, down, gone): blocked += 1
     else: available.append(down)
     if will_collide(board, up, gone): blocked += 1
@@ -55,15 +54,19 @@ def can_escape(board, pos, gone):
     if will_collide(board, left, gone): blocked += 1
     else: available.append(left)
     
+    # Set current tile to unavailable
     gone.append(pos)
-    # Check blocked tiles
+
+    # If free, return True
     if blocked == 1:
         return True
 
+    # Recursively check if there's a route out
     for tile in available:
         if can_escape(board, tile, copy(gone)):
             return True
     
+    # If there's no route out, return False
     return False
 
 
@@ -121,25 +124,27 @@ def move():
     TODO: Using the data from the endpoint request object, your
             snake AI must choose a direction to move in.
     """
-
+    # Create initial variables
     current_pos = data.get("you").get("body")[0]
     down = dict(x=current_pos.get("x"), y=current_pos.get("y") + 1)
     up = dict(x=current_pos.get("x"), y=current_pos.get("y") - 1)
     right = dict(x=current_pos.get("x") + 1, y=current_pos.get("y"))
     left = dict(x=current_pos.get("x") - 1, y=current_pos.get("y"))
 
-    # Eat food
     # Find closest food
     if len(data.get("board").get("food")) > 0:
         closest_food = None
         closest_distance = None
+
         for f in data.get("board").get("food"):
             if closest_food == None:
                 closest_food = f
-                closest_distance = abs(f.get("x") - current_pos.get("x")) + abs(f.get("y") - current_pos.get("y"))
+                closest_distance = abs(f.get("x") - current_pos.get("x"))
+                    + abs(f.get("y") - current_pos.get("y"))
 
             else:
-                distance = abs(f.get("x") - current_pos.get("x")) + abs(f.get("y") - current_pos.get("y"))
+                distance = abs(f.get("x") - current_pos.get("x")) 
+                    + abs(f.get("y") - current_pos.get("y"))
                 if distance < closest_distance:
                     closest_food = f
                     closest_distance = distance
@@ -211,7 +216,7 @@ def move():
             and not will_collide(data.get("board"), left, [])
             ):
             direction = "left"
-        # pray
+        # pray, no escape, no food on board
         elif not will_collide(data.get("board"), down, []):
             direction = "down"
         elif not will_collide(data.get("board"), up, []):
@@ -223,8 +228,8 @@ def move():
         # Accept death
         else: direction = "up"
     
+    # Print to help debug
     print("pos: " + json.dumps(current_pos) + "\n" + "dir: " + direction)
-
 
     return move_response(direction)
 
