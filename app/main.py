@@ -140,93 +140,102 @@ def move():
             if closest_food == None:
                 closest_food = f
                 closest_distance = abs(f.get("x") - current_pos.get("x"))
-                    + abs(f.get("y") - current_pos.get("y"))
+                + abs(f.get("y") - current_pos.get("y"))
 
             else:
                 distance = abs(f.get("x") - current_pos.get("x")) 
-                    + abs(f.get("y") - current_pos.get("y"))
+                + abs(f.get("y") - current_pos.get("y"))
+                
                 if distance < closest_distance:
                     closest_food = f
                     closest_distance = distance
         
         # Move towards closest food, checking for escapes
-        if (
-            closest_food.get("y") > current_pos.get("y") 
-            and not will_collide(data.get("board"), down, [])
-            and can_escape(data.get("board"), down, [])
-            ):
-            direction = "down"
-        elif (
-            closest_food.get("y") < current_pos.get("y")
-            and not will_collide(data.get("board"), up, [])
-            and can_escape(data.get("board"), up, [])
-            ):
-            direction = "up"
-        elif (
-            closest_food.get("x") > current_pos.get("x")
-            and not will_collide(data.get("board"), right, [])
-            and can_escape(data.get("board"), right, [])
-            ):
-            direction = "right"
-        elif (
-            closest_food.get("x") < current_pos.get("x")
-            and not will_collide(data.get("board"), left, [])
-            and can_escape(data.get("board"), left, [])
-            ):
-            direction = "left"
-        # Escape alive
-        elif (
-            not will_collide(data.get("board"), down, [])
-            and can_escape(data.get("board"), down, [])
-            ):
-            direction = "down"
-        elif (
-            not will_collide(data.get("board"), up, [])
-            and can_escape(data.get("board"), up, [])
-            ):
-            direction = "up"
-        elif (
-            not will_collide(data.get("board"), right, [])
-            and can_escape(data.get("board"), right, [])
-            ):
-            direction = "right"
-        elif (
-            not will_collide(data.get("board"), left, [])
-            and can_escape(data.get("board"), left, [])
-            ):
-            direction = "left"
-        # Move towards closest food, checking for collisions, no escape
-        elif (
-            closest_food.get("y") > current_pos.get("y") 
-            and not will_collide(data.get("board"), down, [])
-            ):
-            direction = "down"
-        elif (
-            closest_food.get("y") < current_pos.get("y")
-            and not will_collide(data.get("board"), up, [])
-            ):
-            direction = "up"
-        elif (
-            closest_food.get("x") > current_pos.get("x")
-            and not will_collide(data.get("board"), right, [])
-            ):
-            direction = "right"
-        elif (
-            closest_food.get("x") < current_pos.get("x")
-            and not will_collide(data.get("board"), left, [])
-            ):
-            direction = "left"
-        # pray, no escape, no food on board
-        elif not will_collide(data.get("board"), down, []):
-            direction = "down"
-        elif not will_collide(data.get("board"), up, []):
-            direction = "up"
-        elif not will_collide(data.get("board"), right, []):
-            direction = "right"
-        elif not will_collide(data.get("board"), left, []):
-            direction = "left"
-        # Accept death
-        else: direction = "up"
+    if (
+        closest_food != None
+        and closest_food.get("y") > current_pos.get("y") 
+        and not will_collide(data.get("board"), down, [])
+        and can_escape(data.get("board"), down, [])
+        ):
+        direction = "down"
+    elif (
+        closest_food != None
+        and closest_food.get("y") < current_pos.get("y")
+        and not will_collide(data.get("board"), up, [])
+        and can_escape(data.get("board"), up, [])
+        ):
+        direction = "up"
+    elif (
+        closest_food != None
+        and closest_food.get("x") > current_pos.get("x")
+        and not will_collide(data.get("board"), right, [])
+        and can_escape(data.get("board"), right, [])
+        ):
+        direction = "right"
+    elif (
+        closest_food != None
+        and closest_food.get("x") < current_pos.get("x")
+        and not will_collide(data.get("board"), left, [])
+        and can_escape(data.get("board"), left, [])
+        ):
+        direction = "left"
+    # Escape alive
+    elif (
+        not will_collide(data.get("board"), down, [])
+        and can_escape(data.get("board"), down, [])
+        ):
+        direction = "down"
+    elif (
+        not will_collide(data.get("board"), up, [])
+        and can_escape(data.get("board"), up, [])
+        ):
+        direction = "up"
+    elif (
+        not will_collide(data.get("board"), right, [])
+        and can_escape(data.get("board"), right, [])
+        ):
+        direction = "right"
+    elif (
+        not will_collide(data.get("board"), left, [])
+        and can_escape(data.get("board"), left, [])
+        ):
+        direction = "left"
+    # Move towards closest food, checking for collisions, no escape
+    elif (
+        closest_food != None
+        and closest_food.get("y") > current_pos.get("y") 
+        and not will_collide(data.get("board"), down, [])
+        ):
+        direction = "down"
+    elif (
+        closest_food != None
+        and closest_food.get("y") < current_pos.get("y")
+        and not will_collide(data.get("board"), up, [])
+        ):
+        direction = "up"
+    elif (
+        closest_food != None
+        and closest_food.get("x") > current_pos.get("x")
+        and not will_collide(data.get("board"), right, [])
+        ):
+        direction = "right"
+    elif (
+        closest_food != None
+        and closest_food.get("x") < current_pos.get("x")
+        and not will_collide(data.get("board"), left, [])
+        ):
+        direction = "left"
+    # pray, no escape, no food on board
+    elif not will_collide(data.get("board"), down, []):
+        direction = "down"
+    elif not will_collide(data.get("board"), up, []):
+        direction = "up"
+    elif not will_collide(data.get("board"), right, []):
+        direction = "right"
+    elif not will_collide(data.get("board"), left, []):
+        direction = "left"
+    # Accept death
+    else: direction = "up"
     
     # Print to help debug
     print("pos: " + json.dumps(current_pos) + "\n" + "dir: " + direction)
