@@ -88,10 +88,7 @@ def nearHead(board, you, pos):
 
     for snake in board["snakes"]:
         if snake != you and len(snake["body"]) >= len(you["body"]):
-            print(snake["body"][0])
             for tile in getAdjacent(snake["body"][0]):
-                print(tile)
-                print(pos)
                 if tile == pos:
                     return True
 
