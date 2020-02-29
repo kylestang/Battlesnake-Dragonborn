@@ -165,10 +165,10 @@ def move():
         for f in board["food"]:
 
             if  (
-                f["x"] > 1 
-                and f["y"] > 1
-                and f["x"] < board["width"] - 2
-                and f["y"] < board["height"] - 2
+                f["x"] > 0 
+                and f["y"] > 0
+                and f["x"] < board["width"] - 1
+                and f["y"] < board["height"] - 1
                 ):
 
                 if closest_food == None:
