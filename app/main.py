@@ -164,11 +164,12 @@ def move():
 
         for f in board["food"]:
 
-            if  (
+            if  ((
                 f["x"] > 0 
                 and f["y"] > 0
                 and f["x"] < board["width"] - 1
-                and f["y"] < board["height"] - 1
+                and f["y"] < board["height"] - 1)
+                or you["health"] < 25
                 ):
 
                 if closest_food == None:
