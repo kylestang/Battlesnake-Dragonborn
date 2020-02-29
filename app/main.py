@@ -33,7 +33,10 @@ def will_collide(board, pos, gone):
     return False
 
 # Check if snake can escape from tile
-def can_escape(board, pos, gone):
+def can_escape(board, you, pos, gone):
+    # My tail is safe
+    if pos == you["body"][-1]:
+        return True
 
     # Store number of blocked tiles and list of available tiles
     blocked = 0
@@ -60,7 +63,7 @@ def can_escape(board, pos, gone):
 
     # Recursively check if there's a route out
     for tile in available:
-        if can_escape(board, tile, copy(gone)):
+        if can_escape(board, you, tile, copy(gone)):
             return True
     
     # If there's no route out, return False
@@ -180,7 +183,7 @@ def move():
         and not will_collide(board, down, [])
         and not headon_death(board, you, down)
         and not nearHead(board, you, down)
-        and can_escape(board, down, [])
+        and can_escape(board, you, down, [])
         ):
         direction = "down"
         print(1)
@@ -190,7 +193,7 @@ def move():
         and not will_collide(board, up, [])
         and not headon_death(board, you, up)
         and not nearHead(board, you, up)
-        and can_escape(board, up, [])
+        and can_escape(board, you, up, [])
         ):
         direction = "up"
         print(2)
@@ -200,7 +203,7 @@ def move():
         and not will_collide(board, right, [])
         and not headon_death(board, you, right)
         and not nearHead(board, you, right)
-        and can_escape(board, right, [])
+        and can_escape(board, you, right, [])
         ):
         direction = "right"
         print(3)
@@ -210,7 +213,7 @@ def move():
         and not will_collide(board, left, [])
         and not headon_death(board, you, left)
         and not nearHead(board, you, left)
-        and can_escape(board, left, [])
+        and can_escape(board, you, left, [])
         ):
         direction = "left"
         print(4)
@@ -220,7 +223,7 @@ def move():
         not will_collide(board, down, [])
         and not headon_death(board, you, down)
         and not nearHead(board, you, down)
-        and can_escape(board, down, [])
+        and can_escape(board, you, down, [])
         ):
         direction = "down"
         print(5)
@@ -228,7 +231,7 @@ def move():
         not will_collide(board, up, [])
         and not headon_death(board, you, up)
         and not nearHead(board, you, up)
-        and can_escape(board, up, [])
+        and can_escape(board, you, up, [])
         ):
         direction = "up"
         print(6)
@@ -236,7 +239,7 @@ def move():
         not will_collide(board, right, [])
         and not headon_death(board, you, right)
         and not nearHead(board, you, right)
-        and can_escape(board, right, [])
+        and can_escape(board, you, right, [])
         ):
         direction = "right"
         print(7)
@@ -244,7 +247,7 @@ def move():
         not will_collide(board, left, [])
         and not headon_death(board, you, left)
         and not nearHead(board, you, left)
-        and can_escape(board, left, [])
+        and can_escape(board, you, left, [])
         ):
         direction = "left"
         print(8)
@@ -253,28 +256,28 @@ def move():
     elif (
         not will_collide(board, down, [])
         and not headon_death(board, you, down)
-        and can_escape(board, down, [])
+        and can_escape(board, you, down, [])
         ):
         direction = "down"
         print(9)
     elif (
         not will_collide(board, up, [])
         and not headon_death(board, you, up)
-        and can_escape(board, up, [])
+        and can_escape(board, you, up, [])
         ):
         direction = "up"
         print(10)
     elif (
         not will_collide(board, right, [])
         and not headon_death(board, you, right)
-        and can_escape(board, right, [])
+        and can_escape(board, you, right, [])
         ):
         direction = "right"
         print(11)
     elif (
         not will_collide(board, left, [])
         and not headon_death(board, you, left)
-        and can_escape(board, left, [])
+        and can_escape(board, you, left, [])
         ):
         direction = "left"
         print(12)
