@@ -158,23 +158,31 @@ def move():
     current_pos = you["body"][0]
     down, up, right, left = getAdjacent(current_pos)
     
-    # Find closest food
+    # Find closest food that's not against a wall
     closest_food = None
     if len(board["food"]) > 0:
 
         for f in board["food"]:
-            if closest_food == None:
-                closest_food = f
-                closest_distance = (abs(f["x"] - current_pos["x"])
-                + abs(f["y"] - current_pos["y"]))
 
-            else:
-                distance = (abs(f["x"] - current_pos["x"]) 
-                + abs(f["y"] - current_pos["y"]))
-                
-                if distance < closest_distance:
+            if  (
+                f["x"] > 1 
+                and f["y"] > 1
+                and f["x"] < board["width"] - 2
+                and f["y"] < board["height"] - 2
+                ):
+
+                if closest_food == None:
                     closest_food = f
-                    closest_distance = distance
+                    closest_distance = (abs(f["x"] - current_pos["x"])
+                    + abs(f["y"] - current_pos["y"]))
+
+                else:
+                    distance = (abs(f["x"] - current_pos["x"]) 
+                    + abs(f["y"] - current_pos["y"]))
+                    
+                    if distance < closest_distance:
+                        closest_food = f
+                        closest_distance = distance
     
     # Move towards closest food, checking for collisions, headon, and nearHead
     if (
