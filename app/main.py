@@ -156,6 +156,7 @@ def move():
     board = data["board"]
     you = data["you"]
     current_pos = you["body"][0]
+    tail = you["body"][-1]
     down, up, right, left = getAdjacent(current_pos)
     
     # Find closest food that's not against a wall
@@ -226,6 +227,44 @@ def move():
         ):
         direction = "left"
         print(4)
+
+    # Move towards tail
+    elif (
+        tail["y"] > current_pos["y"]
+        and not will_collide(board, down, [])
+        and not headon_death(board, you, down)
+        and not nearHead(board, you, down)
+        and can_escape(board, you, down, [])
+        ):
+        direction = "down"
+        print(5)
+    elif (
+        tail["y"] < current_pos["y"]
+        and not will_collide(board, up, [])
+        and not headon_death(board, you, up)
+        and not nearHead(board, you, up)
+        and can_escape(board, you, up, [])
+        ):
+        direction = "up"
+        print(6)
+    elif (
+        tail["x"] > current_pos["x"]
+        and not will_collide(board, right, [])
+        and not headon_death(board, you, right)
+        and not nearHead(board, you, right)
+        and can_escape(board, you, right, [])
+        ):
+        direction = "right"
+        print(7)
+    elif (
+        tail["x"] < current_pos["x"]
+        and not will_collide(board, left, [])
+        and not headon_death(board, you, left)
+        and not nearHead(board, you, left)
+        and can_escape(board, you, left, [])
+        ):
+        direction = "left"
+        print(8)
     
     # Escape alive
     elif (
@@ -260,6 +299,40 @@ def move():
         ):
         direction = "left"
         print(8)
+    
+    # Move towards tail, accepting nearHead
+    elif (
+        tail["y"] > current_pos["y"]
+        and not will_collide(board, down, [])
+        and not headon_death(board, you, down)
+        and can_escape(board, you, down, [])
+        ):
+        direction = "down"
+        print(9)
+    elif (
+        tail["y"] < current_pos["y"]
+        and not will_collide(board, up, [])
+        and not headon_death(board, you, up)
+        and can_escape(board, you, up, [])
+        ):
+        direction = "up"
+        print(10)
+    elif (
+        tail["x"] > current_pos["x"]
+        and not will_collide(board, right, [])
+        and not headon_death(board, you, right)
+        and can_escape(board, you, right, [])
+        ):
+        direction = "right"
+        print(11)
+    elif (
+        tail["x"] < current_pos["x"]
+        and not will_collide(board, left, [])
+        and not headon_death(board, you, left)
+        and can_escape(board, you, left, [])
+        ):
+        direction = "left"
+        print(12)
 
     # Escape alive, accepting nearHead
     elif (
