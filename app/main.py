@@ -65,20 +65,15 @@ def can_escape(board, you, pos, gone):
 
 # Find largest area to escape
 def checkArea(board, pos, gone):
-    count = 1
+    if(will_collide(board, pos, gone)):
+        return 0
 
+    count = 1
+    gone.append(pos)
     for tile in getAdjacent(pos):
-        if not will_collide(board, pos, gone):
-            count += checkArea(board, tile, gone)
+        count += checkArea(board, tile, gone)
     
     return count
-
-
-def is_largest(board, pos, dir, gone):
-
-    for tile in getAdjacent(pos):
-        if not will_collide(board, tile, gone):
-
 
 # Returns True if about to die from headon collision
 def headon_death(board, you, pos):
@@ -302,6 +297,7 @@ def move():
         and not nearHead(board, you, down)
         and checkArea(board, down, []) >= checkArea(board, up, [])
         and checkArea(board, down, []) >= checkArea(board, right, [])
+        and checkArea(board, down, []) >= checkArea(board, up, [])
         ):
         direction = "down"
         print(13)
@@ -311,6 +307,9 @@ def move():
         and not will_collide(board, up, [])
         and not headon_death(board, you, up)
         and not nearHead(board, you, up)
+        and checkArea(board, up, []) >= checkArea(board, down, [])
+        and checkArea(board, up, []) >= checkArea(board, right, [])
+        and checkArea(board, up, []) >= checkArea(board, left, [])
         ):
         direction = "up"
         print(14)
@@ -320,6 +319,9 @@ def move():
         and not will_collide(board, right, [])
         and not headon_death(board, you, right)
         and not nearHead(board, you, right)
+        and checkArea(board, right, []) >= checkArea(board, down, [])
+        and checkArea(board, right, []) >= checkArea(board, up, [])
+        and checkArea(board, right, []) >= checkArea(board, left, [])
         ):
         direction = "right"
         print(15)
@@ -329,6 +331,9 @@ def move():
         and not will_collide(board, left, [])
         and not headon_death(board, you, left)
         and not nearHead(board, you, left)
+        and checkArea(board, left, []) >= checkArea(board, down, [])
+        and checkArea(board, left, []) >= checkArea(board, up, [])
+        and checkArea(board, left, []) >= checkArea(board, right, [])
         ):
         direction = "left"
         print(16)
