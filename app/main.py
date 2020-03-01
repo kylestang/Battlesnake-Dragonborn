@@ -164,27 +164,18 @@ def move():
     if len(board["food"]) > 0:
 
         for f in board["food"]:
+            if closest_food == None:
+                closest_food = f
+                closest_distance = (abs(f["x"] - current_pos["x"])
+                + abs(f["y"] - current_pos["y"]))
 
-            if  ((
-                f["x"] > 0 
-                and f["y"] > 0
-                and f["x"] < board["width"] - 1
-                and f["y"] < board["height"] - 1)
-                or you["health"] < 25
-                ):
-
-                if closest_food == None:
+            else:
+                distance = (abs(f["x"] - current_pos["x"]) 
+                + abs(f["y"] - current_pos["y"]))
+                
+                if distance < closest_distance:
                     closest_food = f
-                    closest_distance = (abs(f["x"] - current_pos["x"])
-                    + abs(f["y"] - current_pos["y"]))
-
-                else:
-                    distance = (abs(f["x"] - current_pos["x"]) 
-                    + abs(f["y"] - current_pos["y"]))
-                    
-                    if distance < closest_distance:
-                        closest_food = f
-                        closest_distance = distance
+                    closest_distance = distance
     
     # Move towards closest food, checking for collisions, headon, and nearHead
     if (
