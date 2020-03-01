@@ -302,9 +302,7 @@ def move():
         direction = "down"
         print(13)
     elif (
-        closest_food != None
-        and closest_food["y"] < current_pos["y"]
-        and not will_collide(board, up, [])
+        not will_collide(board, up, [])
         and not headon_death(board, you, up)
         and not nearHead(board, you, up)
         and checkArea(board, up, []) >= checkArea(board, down, [])
@@ -314,9 +312,7 @@ def move():
         direction = "up"
         print(14)
     elif (
-        closest_food != None
-        and closest_food["x"] > current_pos["x"]
-        and not will_collide(board, right, [])
+        not will_collide(board, right, [])
         and not headon_death(board, you, right)
         and not nearHead(board, you, right)
         and checkArea(board, right, []) >= checkArea(board, down, [])
@@ -326,9 +322,7 @@ def move():
         direction = "right"
         print(15)
     elif (
-        closest_food != None
-        and closest_food["x"] < current_pos["x"]
-        and not will_collide(board, left, [])
+        not will_collide(board, left, [])
         and not headon_death(board, you, left)
         and not nearHead(board, you, left)
         and checkArea(board, left, []) >= checkArea(board, down, [])
