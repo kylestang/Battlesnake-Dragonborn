@@ -68,12 +68,14 @@ def checkArea(board, pos, gone):
     if(will_collide(board, pos, gone)):
         return 0
 
-    count = 1
+    largest = 0
     gone.append(pos)
     for tile in getAdjacent(pos):
-        count += checkArea(board, tile, gone)
+        count = checkArea(board, tile, copy(gone))
+        if count > largest:
+            largest = count
     
-    return count
+    return largest + 1
 
 # Returns True if about to die from headon collision
 def headon_death(board, you, pos):
@@ -297,7 +299,7 @@ def move():
         and not nearHead(board, you, down)
         and checkArea(board, down, []) >= checkArea(board, up, [])
         and checkArea(board, down, []) >= checkArea(board, right, [])
-        and checkArea(board, down, []) >= checkArea(board, up, [])
+        and checkArea(board, down, []) >= checkArea(board, left, [])
         ):
         direction = "down"
         print(13)
