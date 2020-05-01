@@ -19,9 +19,8 @@ def will_collide(board, pos, gone):
         return True
     
     # Check tiles eliminated by other functions for collisions
-    for tile in gone:
-        if(tile == pos):
-            return True
+    if pos in gone:
+        return True
 
     # Check snakes for collisions, tail will not collide
     for snake in board["snakes"]:
@@ -42,17 +41,12 @@ def can_escape(board, you, pos, gone):
     blocked = 0
     available = []
 
-    down, up, right, left = getAdjacent(pos)
-
    # Find blocked and available tiles
-    if will_collide(board, down, gone): blocked += 1
-    else: available.append(down)
-    if will_collide(board, up, gone): blocked += 1
-    else: available.append(up)
-    if will_collide(board, right, gone): blocked += 1
-    else: available.append(right)
-    if will_collide(board, left, gone): blocked += 1
-    else: available.append(left)
+    for tile in getAdjacent(pos):
+        if will_collide(board, tile, gone):
+            blocked += 1
+        else:
+            available.append(tile)
     
     # If free, return True
     if blocked == 1:
@@ -68,6 +62,20 @@ def can_escape(board, you, pos, gone):
     
     # If there's no route out, return False
     return False
+
+# Find largest area to escape
+def checkArea(board, pos, gone):
+    if(will_collide(board, pos, gone)):
+        return 0
+
+    largest = 0
+    gone.append(pos)
+    for tile in getAdjacent(pos):
+        count = checkArea(board, tile, copy(gone))
+        if count > largest:
+            largest = count
+    
+    return largest + 1
 
 # Returns True if about to die from headon collision
 def headon_death(board, you, pos):
@@ -176,6 +184,8 @@ def move():
                     closest_food = f
                     closest_distance = distance
     
+    area = -1
+
     # Move towards closest food, checking for collisions, headon, and nearHead
     if (
         closest_food != None
@@ -282,40 +292,44 @@ def move():
         direction = "left"
         print(12)
     
-    # Move towards closest food, checking for collisions, headon, and nearHead, no escape
+    # Move towards largest area, checking for collisions, headon, and nearHead, no escape
     elif (
-        closest_food != None
-        and closest_food["y"] > current_pos["y"] 
-        and not will_collide(board, down, [])
+        not will_collide(board, down, [])
         and not headon_death(board, you, down)
         and not nearHead(board, you, down)
+        and checkArea(board, down, []) >= checkArea(board, up, [])
+        and checkArea(board, down, []) >= checkArea(board, right, [])
+        and checkArea(board, down, []) >= checkArea(board, left, [])
         ):
         direction = "down"
         print(13)
     elif (
-        closest_food != None
-        and closest_food["y"] < current_pos["y"]
-        and not will_collide(board, up, [])
+        not will_collide(board, up, [])
         and not headon_death(board, you, up)
         and not nearHead(board, you, up)
+        and checkArea(board, up, []) >= checkArea(board, down, [])
+        and checkArea(board, up, []) >= checkArea(board, right, [])
+        and checkArea(board, up, []) >= checkArea(board, left, [])
         ):
         direction = "up"
         print(14)
     elif (
-        closest_food != None
-        and closest_food["x"] > current_pos["x"]
-        and not will_collide(board, right, [])
+        not will_collide(board, right, [])
         and not headon_death(board, you, right)
         and not nearHead(board, you, right)
+        and checkArea(board, right, []) >= checkArea(board, down, [])
+        and checkArea(board, right, []) >= checkArea(board, up, [])
+        and checkArea(board, right, []) >= checkArea(board, left, [])
         ):
         direction = "right"
         print(15)
     elif (
-        closest_food != None
-        and closest_food["x"] < current_pos["x"]
-        and not will_collide(board, left, [])
+        not will_collide(board, left, [])
         and not headon_death(board, you, left)
         and not nearHead(board, you, left)
+        and checkArea(board, left, []) >= checkArea(board, down, [])
+        and checkArea(board, left, []) >= checkArea(board, up, [])
+        and checkArea(board, left, []) >= checkArea(board, right, [])
         ):
         direction = "left"
         print(16)
