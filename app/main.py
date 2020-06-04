@@ -3,7 +3,7 @@ import os
 import bottle
 
 from .api import ping_response, start_response, move_response, end_response
-from .functions import find_closest_food, will_collide, can_escape, check_area, area_size, headon_death, near_head, get_adjacent, against_wall, wall_trap
+from .functions import find_closest_food, will_collide, can_escape, check_area, area_size, headon_death, near_head, get_adjacent, against_wall, wall_trap, can_kill_headon
 
 # Constants
 MAX_SEARCH = 26
@@ -59,6 +59,7 @@ def move():
     board = data["board"]
     you = data["you"]
     current_pos = you["head"]
+    tail = you["body"][-1]
     down, up, right, left = get_adjacent(current_pos)
     
     closest_food = find_closest_food(board, current_pos, you["health"], STARVING_THRESHOLD)
