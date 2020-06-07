@@ -3,7 +3,8 @@ import os
 import bottle
 
 from .api import ping_response, start_response, move_response, end_response
-from .functions import find_closest_food, will_collide, can_escape, check_area, area_size, headon_death, near_head, get_adjacent, against_wall, wall_trap, can_kill_headon
+from .functions import (get_adjacent, find_closest_food, find_weak_head, will_collide, area_size,
+    check_area, can_escape, against_wall, near_head, headon_death, headon_kill, wall_trap)
 
 # Constants
 MAX_SEARCH = 26
@@ -61,389 +62,460 @@ def move():
     current_pos = you["head"]
     tail = you["body"][-1]
     down, up, right, left = get_adjacent(current_pos)
-    
-    closest_food = find_closest_food(board, current_pos, you["health"], STARVING_THRESHOLD)
 
-    if will_collide(board, down, []):
+    # Data
+    # closest_food
+    closest_food = find_closest_food(board, you, current_pos, STARVING_THRESHOLD)
+
+    # closest_weak_snake
+    closest_weak_head = find_weak_head(board, you, current_pos)
+
+    # will_collide
+    will_collide_down = will_collide(board, down, [])
+    will_collide_up = will_collide(board, up, [])
+    will_collide_right = will_collide(board, right, [])
+    will_collide_left = will_collide(board, left, [])
+
+    # area_size, check_area
+    #TODO max_area may be unnecessary
+    if will_collide_down:
         down_area = 0
     else:
-        max_area = min(area_size(board, down, [], 1, you["length"]), MAX_SEARCH)
+        max_area = area_size(board, down, [], 1, min(you["length"], MAX_SEARCH))
         down_area = check_area(board, you, down, [], 0, max_area)
     
-    if will_collide(board, up, []):
+    if will_collide_up:
         up_area = 0
     else:
-        max_area = min(area_size(board, up, [], 1, you["length"]), MAX_SEARCH)
+        max_area = area_size(board, up, [], 1, min(you["length"], MAX_SEARCH))
         up_area = check_area(board, you, up, [], 0, max_area)
     
-    if will_collide(board, right, []):
+    if will_collide_right:
         right_area = 0
     else:
         max_area = min(area_size(board, right, [], 1, you["length"]), MAX_SEARCH)
         right_area = check_area(board, you, right, [], 0, max_area)
     
-    if will_collide(board, left, []):
+    if will_collide_left:
         left_area = 0
     else:
         max_area = min(area_size(board, left, [], 1, you["length"]), MAX_SEARCH)
         left_area = check_area(board, you, left, [], 0, max_area)
+    
+    # can_escape
+    can_escape_down = can_escape(you, down_area, MAX_SEARCH)
+    can_escape_up = can_escape(you, up_area, MAX_SEARCH)
+    can_escape_right = can_escape(you, right_area, MAX_SEARCH)
+    can_escape_left = can_escape(you, left_area, MAX_SEARCH)
 
-    print("Areas: down:", down_area, "up:", up_area, "left:", left_area, "right:", right_area)
+    # against_wall
+    against_wall_down = against_wall(board, down)
+    against_wall_up = against_wall(board, up)
+    against_wall_right = against_wall(board, right)
+    against_wall_left = against_wall(board, left)
 
-    # If safe, trap other snakes against the wall
+    # near_head
+    near_head_down = near_head(board, you, down)
+    near_head_up = near_head(board, you, up)
+    near_head_right = near_head(board, you, right)
+    near_head_left = near_head(board, you, left)
+
+    # headon_death
+    headon_death_down = headon_death(board, you, down)
+    headon_death_up = headon_death(board, you, up)
+    headon_death_right = headon_death(board, you, right)
+    headon_death_left = headon_death(board, you, left)
+
+    # headon_kill
+    headon_kill_down = headon_kill(board, you, down)
+    headon_kill_up = headon_kill(board, you, up)
+    headon_kill_right = headon_kill(board, you, right)
+    headon_kill_left = headon_kill(board, you, left)
+
+    # wall_trap
+    wall_trap_down = wall_trap(board, you, down)
+    wall_trap_up = wall_trap(board, you, up)
+    wall_trap_right = wall_trap(board, you, right)
+    wall_trap_left = wall_trap(board, you, left)
+
+    # Decision
+    # If possible, kill a nearby snake
     if (
-        not will_collide(board, down, [])
-        and wall_trap(board, you, down)
-        and not headon_death(board, you, down)
-        and not near_head(board, you, down)
-        and can_escape(you, down_area, MAX_SEARCH)
+        not will_collide_down
+        and not near_head_down
+        and headon_kill_down
         ):
         direction = "down"
         print(1)
     elif (
-        not will_collide(board, up, [])
-        and wall_trap(board, you, up)
-        and not headon_death(board, you, up)
-        and not near_head(board, you, up)
-        and can_escape(you, up_area, MAX_SEARCH)
+        not will_collide_up
+        and not near_head_up
+        and headon_kill_up
         ):
         direction = "up"
         print(2)
     elif (
-        not will_collide(board, right, [])
-        and wall_trap(board, you, right)
-        and not headon_death(board, you, right)
-        and not near_head(board, you, right)
-        and can_escape(you, right_area, MAX_SEARCH)
+        not will_collide_right
+        and not near_head_right
+        and headon_kill_right
         ):
         direction = "right"
         print(3)
     elif (
-        not will_collide(board, left, [])
-        and wall_trap(board, you, left)
-        and not headon_death(board, you, left)
-        and not near_head(board, you, left)
-        and can_escape(you, left_area, MAX_SEARCH)
+        not will_collide_left
+        and not near_head_left
+        and headon_kill_left
         ):
         direction = "left"
         print(4)
 
-    # Move towards closest food, checking for collisions, headon, and nearHead
+    # If safe, trap other snakes against the wall
     elif (
-        closest_food != None
-        and closest_food["y"] > current_pos["y"] 
-        and not will_collide(board, down, [])
-        and not headon_death(board, you, down)
-        and not near_head(board, you, down)
-        and can_escape(you, down_area, MAX_SEARCH)
+        not will_collide_down
+        and can_escape_down
+        and not near_head_down
+        and wall_trap_down
         ):
         direction = "down"
         print(5)
     elif (
-        closest_food != None
-        and closest_food["y"] < current_pos["y"]
-        and not will_collide(board, up, [])
-        and not headon_death(board, you, up)
-        and not near_head(board, you, up)
-        and can_escape(you, up_area, MAX_SEARCH)
+        not will_collide_up
+        and can_escape_up
+        and not near_head_up
+        and wall_trap_up
         ):
         direction = "up"
         print(6)
     elif (
-        closest_food != None
-        and closest_food["x"] > current_pos["x"]
-        and not will_collide(board, right, [])
-        and not headon_death(board, you, right)
-        and not near_head(board, you, right)
-        and can_escape(you, right_area, MAX_SEARCH)
+        not will_collide_right
+        and can_escape_right
+        and not near_head_right
+        and wall_trap_right
         ):
         direction = "right"
         print(7)
     elif (
-        closest_food != None
-        and closest_food["x"] < current_pos["x"]
-        and not will_collide(board, left, [])
-        and not headon_death(board, you, left)
-        and not near_head(board, you, left)
-        and can_escape(you, left_area, MAX_SEARCH)
+        not will_collide_left
+        and can_escape_left
+        and not near_head_left
+        and wall_trap_left
         ):
         direction = "left"
         print(8)
-    
-    # Escape alive, not walls
+
+    # Move towards closest food, avoid walls, checking for collisions, can_escape and near_head
     elif (
-        not will_collide(board, down, [])
-        and not against_wall(board, down)
-        and not headon_death(board, you, down)
-        and not near_head(board, you, down)
-        and can_escape(you, down_area, MAX_SEARCH)
+        closest_food is not None and closest_food["y"] > current_pos["y"] 
+        and not will_collide_down
+        and can_escape_down
+        and not against_wall_down
+        and not near_head_down
         ):
         direction = "down"
         print(9)
     elif (
-        not will_collide(board, up, [])
-        and not against_wall(board, up)
-        and not headon_death(board, you, up)
-        and not near_head(board, you, up)
-        and can_escape(you, up_area, MAX_SEARCH)
+        closest_food is not None and closest_food["y"] < current_pos["y"]
+        and not will_collide_up
+        and can_escape_up
+        and not against_wall_up
+        and not near_head_up
         ):
         direction = "up"
         print(10)
     elif (
-        not will_collide(board, right, [])
-        and not against_wall(board, right)
-        and not headon_death(board, you, right)
-        and not near_head(board, you, right)
-        and can_escape(you, right_area, MAX_SEARCH)
+        closest_food is not None and closest_food["x"] > current_pos["x"]
+        and not will_collide_right
+        and can_escape_right
+        and not against_wall_right
+        and not near_head_right
         ):
         direction = "right"
         print(11)
     elif (
-        not will_collide(board, left, [])
-        and not against_wall(board, left)
-        and not headon_death(board, you, left)
-        and not near_head(board, you, left)
-        and can_escape(you, left_area, MAX_SEARCH)
+        closest_food is not None
+        and closest_food["x"] < current_pos["x"]
+        and not will_collide_left
+        and can_escape_left
+        and not against_wall_left
+        and not near_head_left
         ):
         direction = "left"
         print(12)
-
-    # Escape alive, allowing walls
+    
+    # Move towards closest snake that I can kill, avoid walls, checking for collisions, can_escape, and near_head
     elif (
-        not will_collide(board, down, [])
-        and not headon_death(board, you, down)
-        and not near_head(board, you, down)
-        and can_escape(you, down_area, MAX_SEARCH)
+        closest_weak_head is not None and closest_weak_head["y"] > current_pos["y"]
+        and not will_collide_down
+        and can_escape_down
+        and not against_wall_down
+        and not near_head_down
         ):
         direction = "down"
         print(13)
     elif (
-        not will_collide(board, up, [])
-        and not headon_death(board, you, up)
-        and not near_head(board, you, up)
-        and can_escape(you, up_area, MAX_SEARCH)
+        closest_weak_head is not None and closest_weak_head["y"] < current_pos["y"]
+        and not will_collide_up
+        and can_escape_up
+        and not against_wall_up
+        and not near_head_up
         ):
         direction = "up"
         print(14)
     elif (
-        not will_collide(board, right, [])
-        and not headon_death(board, you, right)
-        and not near_head(board, you, right)
-        and can_escape(you, right_area, MAX_SEARCH)
+        closest_weak_head is not None and closest_weak_head["x"] > current_pos["x"]
+        and not will_collide_right
+        and can_escape_right
+        and not against_wall_right
+        and not near_head_right
         ):
         direction = "right"
         print(15)
     elif (
-        not will_collide(board, left, [])
-        and not headon_death(board, you, left)
-        and not near_head(board, you, left)
-        and can_escape(you, left_area, MAX_SEARCH)
+        closest_weak_head is not None and closest_weak_head["x"] < current_pos["x"]
+        and not will_collide_left
+        and can_escape_left
+        and not against_wall_left
+        and not near_head_left
         ):
         direction = "left"
         print(16)
-
-    # Escape alive, accepting nearHead
+    
+    # Chase tail, avoid walls, checking for collisions, can_escape, and near_head
     elif (
-        not will_collide(board, down, [])
-        and not headon_death(board, you, down)
-        and can_escape(you, down_area, MAX_SEARCH)
+        tail["y"] > current_pos["y"]
+        and not will_collide_down
+        and can_escape_down
+        and not against_wall_down
+        and not near_head_down
         ):
         direction = "down"
         print(17)
     elif (
-        not will_collide(board, up, [])
-        and not headon_death(board, you, up)
-        and can_escape(you, up_area, MAX_SEARCH)
+        tail["y"] < current_pos["y"]
+        and not will_collide_up
+        and can_escape_up
+        and not against_wall_up
+        and not near_head_up
         ):
         direction = "up"
         print(18)
     elif (
-        not will_collide(board, right, [])
-        and not headon_death(board, you, right)
-        and can_escape(you, right_area, MAX_SEARCH)
+        tail["x"] > current_pos["x"]
+        and not will_collide_right
+        and can_escape_right
+        and not against_wall_right
+        and not near_head_right
         ):
         direction = "right"
         print(19)
     elif (
-        not will_collide(board, left, [])
-        and not headon_death(board, you, left)
-        and can_escape(you, left_area, MAX_SEARCH)
+        tail["x"] < current_pos["x"]
+        and not will_collide_left
+        and can_escape_left
+        and not against_wall_left
+        and not near_head_left
         ):
         direction = "left"
         print(20)
-    
-    # Move towards largest area, checking for collisions, headon, and nearHead, no escape
+
+    # Escape alive, avoid walls, checking for collisions, can_escape, and near_head
     elif (
-        not will_collide(board, down, [])
-        and not headon_death(board, you, down)
-        and not near_head(board, you, down)
-        and down_area == max(down_area, up_area, right_area, left_area)
+        not will_collide_down
+        and can_escape_down
+        and not against_wall_down
+        and not near_head_down
         ):
         direction = "down"
         print(21)
     elif (
-        not will_collide(board, up, [])
-        and not headon_death(board, you, up)
-        and not near_head(board, you, up)
-        and up_area == max(down_area, up_area, right_area, left_area)
+        not will_collide_up
+        and can_escape_up
+        and not against_wall_up
+        and not near_head_up
         ):
         direction = "up"
         print(22)
     elif (
-        not will_collide(board, right, [])
-        and not headon_death(board, you, right)
-        and not near_head(board, you, right)
-        and right_area == max(down_area, up_area, right_area, left_area)
+        not will_collide_right
+        and can_escape_right
+        and not against_wall_right
+        and not near_head_right
         ):
         direction = "right"
         print(23)
     elif (
-        not will_collide(board, left, [])
-        and not headon_death(board, you, left)
-        and not near_head(board, you, left)
-        and left_area == max(down_area, up_area, right_area, left_area)
+        not will_collide_left
+        and can_escape_left
+        and not against_wall_left
+        and not near_head_left
         ):
         direction = "left"
         print(24)
 
-    # Move towards closest food, checking for collisions and headon, no escape
+    # Escape alive, checking for collisions, can_escape, and near_head
     elif (
-        closest_food != None
-        and closest_food["y"] > current_pos["y"] 
-        and not will_collide(board, down, [])
-        and not headon_death(board, you, down)
+        not will_collide_down
+        and can_escape_down
+        and not near_head_down
         ):
         direction = "down"
         print(25)
     elif (
-        closest_food != None
-        and closest_food["y"] < current_pos["y"]
-        and not will_collide(board, up, [])
-        and not headon_death(board, you, up)
+        not will_collide_up
+        and can_escape_up
+        and not near_head_up
         ):
         direction = "up"
         print(26)
     elif (
-        closest_food != None
-        and closest_food["x"] > current_pos["x"]
-        and not will_collide(board, right, [])
-        and not headon_death(board, you, right)
+        not will_collide_right
+        and can_escape_right
+        and not near_head_right
         ):
         direction = "right"
         print(27)
     elif (
-        closest_food != None
-        and closest_food["x"] < current_pos["x"]
-        and not will_collide(board, left, [])
-        and not headon_death(board, you, left)
+        not will_collide_left
+        and can_escape_left
+        and not near_head_left
         ):
         direction = "left"
         print(28)
-    
-    # Avoid collision, headon, and nearHead, no escape and no food
+
+    # Escape alive, checking for collisions, can_escape, and headon_death
     elif (
-        not will_collide(board, down, [])
-        and not headon_death(board, you, down)
-        and not near_head(board, you, down)
+        not will_collide_down
+        and can_escape_down
+        and not headon_death_down
         ):
         direction = "down"
         print(29)
     elif (
-        not will_collide(board, up, [])
-        and not headon_death(board, you, up)
-        and not near_head(board, you, up)
+        not will_collide_up
+        and can_escape_up
+        and not headon_death_up
         ):
         direction = "up"
         print(30)
     elif (
-        not will_collide(board, right, [])
-        and not headon_death(board, you, right)
-        and not near_head(board, you, right)
+        not will_collide_right
+        and can_escape_right
+        and not headon_death_right
         ):
         direction = "right"
         print(31)
     elif (
-        not will_collide(board, left, [])
-        and not headon_death(board, you, left)
-        and not near_head(board, you, left)
+        not will_collide_left
+        and can_escape_left
+        and not headon_death_left
         ):
         direction = "left"
         print(32)
     
-    # Avoid collision and headon, no escape
+    # Move towards largest area, checking for collisions, and near_head
     elif (
-        not will_collide(board, down, [])
-        and not headon_death(board, you, down)
+        not will_collide_down
+        and down_area == max(down_area, up_area, right_area, left_area)
+        and not near_head_down
         ):
         direction = "down"
         print(33)
     elif (
-        not will_collide(board, up, [])
-        and not headon_death(board, you, up)
+        not will_collide_up
+        and up_area == max(down_area, up_area, right_area, left_area)
+        and not near_head_up
         ):
         direction = "up"
         print(34)
     elif (
-        not will_collide(board, right, [])
-        and not headon_death(board, you, right)
+        not will_collide_right
+        and right_area == max(down_area, up_area, right_area, left_area)
+        and not near_head_right
         ):
         direction = "right"
         print(35)
     elif (
-        not will_collide(board, left, [])
-        and not headon_death(board, you, left)
+        not will_collide_left
+        and left_area == max(down_area, up_area, right_area, left_area)
+        and not near_head_left
         ):
         direction = "left"
         print(36)
-
-    # Move towards closest food, checking for collisions, accept headon and no escape
+    
+    # Move towards largest area, checking for collisions, and headon_death
     elif (
-        closest_food != None
-        and closest_food["y"] > current_pos["y"] 
-        and not will_collide(board, down, [])
+        not will_collide_down
+        and down_area == max(down_area, up_area, right_area, left_area)
+        and not headon_death_down
         ):
         direction = "down"
         print(37)
     elif (
-        closest_food != None
-        and closest_food["y"] < current_pos["y"]
-        and not will_collide(board, up, [])
+        not will_collide_up
+        and up_area == max(down_area, up_area, right_area, left_area)
+        and not headon_death_up
         ):
         direction = "up"
         print(38)
     elif (
-        closest_food != None
-        and closest_food["x"] > current_pos["x"]
-        and not will_collide(board, right, [])
+        not will_collide_right
+        and right_area == max(down_area, up_area, right_area, left_area)
+        and not headon_death_right
         ):
         direction = "right"
         print(39)
     elif (
-        closest_food != None
-        and closest_food["x"] < current_pos["x"]
-        and not will_collide(board, left, [])
+        not will_collide_left
+        and left_area == max(down_area, up_area, right_area, left_area)
+        and not headon_death_left
         ):
         direction = "left"
         print(40)
-
-    # Pray, no escape and accept headon
-    elif not will_collide(board, down, []):
+    
+    # Move towards largest area, checking for collisions
+    elif (
+        not will_collide_down
+        and down_area == max(down_area, up_area, right_area, left_area)
+        ):
         direction = "down"
         print(41)
-    elif not will_collide(board, up, []):
+    elif (
+        not will_collide_up
+        and up_area == max(down_area, up_area, right_area, left_area)
+        ):
         direction = "up"
         print(42)
-    elif not will_collide(board, right, []):
+    elif (
+        not will_collide_right
+        and right_area == max(down_area, up_area, right_area, left_area)
+        ):
         direction = "right"
         print(43)
-    elif not will_collide(board, left, []):
+    elif (
+        not will_collide_left
+        and left_area == max(down_area, up_area, right_area, left_area)
+        ):
         direction = "left"
         print(44)
+
+    # Pray, no escape and accept headon
+    elif not will_collide_down:
+        direction = "down"
+        print(45)
+    elif not will_collide_up:
+        direction = "up"
+        print(46)
+    elif not will_collide_right:
+        direction = "right"
+        print(47)
+    elif not will_collide_left:
+        direction = "left"
+        print(48)
     
     # Accept death
     else:
         direction = "up"
-        print(45)
+        print(49)
     
     # Print to help debug
     print("pos: " + json.dumps(current_pos) + "\n" + "dir: " + direction
