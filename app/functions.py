@@ -1,25 +1,55 @@
+# Returns the four tiles adjacent to pos
+def get_adjacent(pos):
+    down = {"x" : pos["x"], "y" : pos["y"] + 1}
+    up = {"x" : pos["x"], "y" : pos["y"] - 1}
+    right = {"x" : pos["x"] + 1, "y" : pos["y"]}
+    left = {"x" : pos["x"] - 1, "y" : pos["y"]}
+
+    return down, up, right, left
+
 # Returns location of closest food to current_pos, or None
-def find_closest_food(board, current_pos, health, starving_threshold):
+def find_closest_food(board, you, pos, starving_threshold):
     closest_food = None
-    if len(board["food"]) > 0:
 
-        # Check each piece of food
-        for food in board["food"]:
-            if not against_wall(board, food) or health <= starving_threshold:
-                if closest_food == None:
+    # Check each piece of food
+    for food in board["food"]:
+        if not distance_from_wall(board, food, 0) or you["health"] <= starving_threshold:
+            if closest_food is None:
+                closest_food = food
+                closest_distance = (abs(food["x"] - pos["x"])
+                + abs(food["y"] - pos["y"]))
+
+            else:
+                distance = (abs(food["x"] - pos["x"]) 
+                + abs(food["y"] - pos["y"]))
+                
+                if distance < closest_distance:
                     closest_food = food
-                    closest_distance = (abs(food["x"] - current_pos["x"])
-                    + abs(food["y"] - current_pos["y"]))
-
-                else:
-                    distance = (abs(food["x"] - current_pos["x"]) 
-                    + abs(food["y"] - current_pos["y"]))
-                    
-                    if distance < closest_distance:
-                        closest_food = food
-                        closest_distance = distance
+                    closest_distance = distance
     
     return closest_food
+
+# Returns the closest head of a snake that I can kill
+def find_weak_head(board, you, pos):
+    closest_head = None
+
+    for snake in board["snakes"]:
+        if snake["length"] < you["length"]:
+            head = snake["head"]
+            if closest_head is None:
+                closest_head = head
+                closest_distance = (abs(head["x"] - pos["x"])
+                + abs(head["y"] - pos["y"]))
+
+            else:
+                distance = (abs(head["x"] - pos["x"]) 
+                + abs(head["y"] - pos["y"]))
+                
+                if distance < closest_distance:
+                    closest_head = head
+                    closest_distance = distance
+
+    return closest_head
 
 # Returns True if this position will kill the snake
 def will_collide(board, pos, gone):
@@ -44,9 +74,13 @@ def will_collide(board, pos, gone):
     # If no collisions, return False
     return False
 
-# Check if snake can escape from tile
-def can_escape(you, area, max_search):
-    return area >= you["length"] or area >= max_search
+# Checks size of available area, limited to max
+def area_size(board, pos, gone, size, max):
+    gone.append(pos)
+    for tile in get_adjacent(pos):
+        if size < max and not will_collide(board, tile, gone):
+            size = area_size(board, tile, gone, size + 1, max)
+    return size
 
 # Find largest area to escape, pos must not be a collision
 def check_area(board, you, pos, gone, current_area, max_area):
@@ -70,13 +104,26 @@ def check_area(board, you, pos, gone, current_area, max_area):
 
     return current_area
 
-# Checks size of available area, limited to length of snake
-def area_size(board, pos, gone, size, max):
-    gone.append(pos)
-    for tile in get_adjacent(pos):
-        if size < max and not will_collide(board, tile, gone):
-            size = area_size(board, tile, gone, size + 1, max)
-    return size
+# Check if snake can escape from tile
+def can_escape(you, area, max_search):
+    return area >= you["length"] or area >= max_search
+
+# Returns True if pos is distance from wall
+def distance_from_wall(board, pos, distance):
+    return (
+        ((pos["x"] == distance or pos["x"] == board["width"] - distance - 1)
+        and distance <= pos["y"] <= board["height"] - distance - 1)
+        or ((pos["y"] == distance or pos["y"] == board["height"] - distance - 1) 
+        and distance <= pos["x"] <= board["width"] - distance - 1))
+
+# Returns true if pos is beside the head of a snake that can kill it headon
+def near_head(board, you, pos):
+    for snake in board["snakes"]:
+        if snake["id"] != you["id"] and snake["length"] >= you["length"]:
+            if pos in get_adjacent(snake["head"]):
+                return True
+
+    return False
 
 # Returns True if about to die from headon collision
 def headon_death(board, you, pos):
@@ -94,47 +141,31 @@ def headon_death(board, you, pos):
     
     return False
 
-# Returns true if pos is beside the head of a snake that can kill it headon
-def near_head(board, you, pos):
+# Returns true if my snake can kill another snake headon
+def headon_kill(board, you, pos):
     for snake in board["snakes"]:
-        if snake["id"] != you["id"] and snake["length"] >= you["length"]:
-            if pos in get_adjacent(snake["head"]):
-                return True
+        can_kill = True
+        if snake["length"] >= you["length"] or not pos in get_adjacent(snake["head"]):
+            can_kill = False
+        else:
+            for tile in get_adjacent(snake["head"]):
+                if not will_collide(board, tile, []) and tile != pos:
+                    can_kill = False
 
+        if can_kill:
+            return True
+    
     return False
-
-# Returns the four tiles adjacent to pos
-def get_adjacent(pos):
-    down = dict(x=pos["x"], y=pos["y"] + 1)
-    up = dict(x=pos["x"], y=pos["y"] - 1)
-    right = dict(x=pos["x"] + 1, y=pos["y"])
-    left = dict(x=pos["x"] - 1, y=pos["y"])
-
-    return down, up, right, left
-
-# Returns True if pos is not beside a wall
-def against_wall(board, pos):
-    return pos["x"] == 0 or pos["x"] == board["width"] - 1 or pos["y"] == 0 or pos["y"] == board["height"] - 1
 
 # Returns true if my snake can trap another against a wall
 def wall_trap(board, you, pos):
-    if not against_wall(board, pos) or against_wall(board, you["head"]):
+    if not distance_from_wall(board, pos, 0) or distance_from_wall(board, you["head"], 0):
         return False
     
     for snake in board["snakes"]:
-        if against_wall(board, snake["head"]) and snake["id"] != you["id"]:
+        if distance_from_wall(board, snake["head"], 0) and snake["id"] != you["id"]:
             for tile in get_adjacent(snake["head"]):
                 if tile in you["body"]:
                     return True
     
     return False
-
-# Returns true if my snake will be able to kill another snake headon
-def can_kill_headon(board, you, pos):
-    for snake in board["snakes"]:
-        if you["length"] > snake["length"]:
-            for tile in get_adjacent(snake["head"]):
-                if tile != pos and not will_collide(board, tile, []):
-                    return False
-    
-    return True
