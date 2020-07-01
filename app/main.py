@@ -10,7 +10,7 @@ from functions import (get_adjacent, find_closest_food, find_weak_head, will_col
 MAX_SEARCH = 26
 STARVING_THRESHOLD = 15
 SAFE_DISTANCE = 2
-
+OPENING_TURNS = 20
 
 @bottle.route('/')
 def index():
@@ -67,7 +67,7 @@ def move():
 
     # Data
     # closest_food
-    closest_food = find_closest_food(board, you, current_pos, STARVING_THRESHOLD)
+    closest_food = find_closest_food(board, you, current_pos, data["turn"], STARVING_THRESHOLD, OPENING_TURNS)
 
     # closest_weak_snake
     closest_weak_head = find_weak_head(board, you, current_pos)

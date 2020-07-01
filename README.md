@@ -1,4 +1,4 @@
-# [Dragonborn](https://play.battlesnake.com/s/snk_t9GGBD3PTttS9FFxTRDYhtrV/)
+# [Mithrandir](https://play.battlesnake.com/s/snk_t9GGBD3PTttS9FFxTRDYhtrV/)
 
 See it on the [leaderboard](https://play.battlesnake.com/arena/global)
 
