@@ -63,11 +63,12 @@ def move():
     current_pos = you["head"]
     tail = you["body"][-1]
     health = you["health"]
+    turn = data["turn"]
     down, up, right, left = get_adjacent(current_pos)
 
     # Data
     # closest_food
-    closest_food = find_closest_food(board, you, current_pos, data["turn"], STARVING_THRESHOLD, OPENING_TURNS)
+    closest_food = find_closest_food(board, you, current_pos, turn, STARVING_THRESHOLD, OPENING_TURNS)
 
     # closest_weak_snake
     closest_weak_head = find_weak_head(board, you, current_pos)
@@ -211,10 +212,10 @@ def move():
         direction = "left"
         print(8)
 
-    # Move towards closest food if starving, checking for collisions, can_escape and near_head
+    # Move towards closest food if game opening or starving, checking for collisions, can_escape and near_head
     elif (
         closest_food is not None and closest_food["y"] > current_pos["y"] 
-        and health <= STARVING_THRESHOLD
+        and (health <= STARVING_THRESHOLD or turn <= OPENING_TURNS)
         and not will_collide_down
         and can_escape_down
         and not near_head_down
@@ -223,7 +224,7 @@ def move():
         print(9)
     elif (
         closest_food is not None and closest_food["y"] < current_pos["y"]
-        and health <= STARVING_THRESHOLD
+        and (health <= STARVING_THRESHOLD or turn <= OPENING_TURNS)
         and not will_collide_up
         and can_escape_up
         and not near_head_up
@@ -232,7 +233,7 @@ def move():
         print(10)
     elif (
         closest_food is not None and closest_food["x"] > current_pos["x"]
-        and health <= STARVING_THRESHOLD
+        and (health <= STARVING_THRESHOLD or turn <= OPENING_TURNS)
         and not will_collide_right
         and can_escape_right
         and not near_head_right
@@ -241,7 +242,7 @@ def move():
         print(11)
     elif (
         closest_food is not None and closest_food["x"] < current_pos["x"]
-        and health <= STARVING_THRESHOLD
+        and (health <= STARVING_THRESHOLD or turn <= OPENING_TURNS)
         and not will_collide_left
         and can_escape_left
         and not near_head_left
