@@ -8,12 +8,12 @@ def get_adjacent(pos):
     return down, up, right, left
 
 # Returns location of closest food to current_pos, or None
-def find_closest_food(board, you, pos, starving_threshold):
+def find_closest_food(board, you, pos, turn, starving_threshold, opening_turns):
     closest_food = None
 
     # Check each piece of food
     for food in board["food"]:
-        if not distance_from_wall(board, food, 0) or you["health"] <= starving_threshold:
+        if not distance_from_wall(board, food, 0) or you["health"] <= starving_threshold or turn <= opening_turns:
             if closest_food is None:
                 closest_food = food
                 closest_distance = (abs(food["x"] - pos["x"])
