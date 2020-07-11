@@ -577,7 +577,7 @@ def move():
         log_file = open(data["game"]["id"] + ".log", "at")
         log_file.write(decision + "\n")
         log_file.write("pos: " + json.dumps(current_pos) + "\n" + "dir: " + direction
-        + "\n" + "food: " + json.dumps(closest_food) + "\n" + "turn: " + str(data["turn"]))
+        + "\n" + "food: " + json.dumps(closest_food) + "\n" + "turn: " + str(data["turn"]) + "\n")
         log_file.close()
         
     return move_response(direction)
