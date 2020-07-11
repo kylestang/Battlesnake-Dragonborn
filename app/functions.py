@@ -91,7 +91,7 @@ def area_size(board, pos, gone, size, max):
 def check_area(board, you, pos, gone, current_area, max_area):
     for snake in board["snakes"]:
         if pos == snake["body"][-1] or (current_area > 1 and pos == snake["body"][-2]):
-            return max_area - 1
+            return max_area
 
     if will_collide(board, pos, gone):
         return current_area
