@@ -11,6 +11,7 @@ MAX_SEARCH = 26
 STARVING_THRESHOLD = 15
 SAFE_DISTANCE = 2
 OPENING_TURNS = 20
+LOGGING = True
 
 @bottle.route('/')
 def index():
@@ -45,6 +46,10 @@ def start():
     data = bottle.request.json
 
     print(json.dumps(data))
+    if LOGGING:
+        log_file = open(data["game"]["id"] + ".log", "at")
+        log_file.write(json.dumps(data))
+        log_file.close()
 
     color = "#808080"
     head_type = "smile"
@@ -155,28 +160,28 @@ def move():
         and headon_kill_down
         ):
         direction = "down"
-        print(1)
+        decision = "1"
     elif (
         not will_collide_up
         and not near_head_up
         and headon_kill_up
         ):
         direction = "up"
-        print(2)
+        decision = "2"
     elif (
         not will_collide_right
         and not near_head_right
         and headon_kill_right
         ):
         direction = "right"
-        print(3)
+        decision = "3"
     elif (
         not will_collide_left
         and not near_head_left
         and headon_kill_left
         ):
         direction = "left"
-        print(4)
+        decision = "4"
 
     # If safe, trap other snakes against the wall
     elif (
@@ -186,7 +191,7 @@ def move():
         and wall_trap_down
         ):
         direction = "down"
-        print(5)
+        decision = "5"
     elif (
         not will_collide_up
         and can_escape_up
@@ -194,7 +199,7 @@ def move():
         and wall_trap_up
         ):
         direction = "up"
-        print(6)
+        decision = "6"
     elif (
         not will_collide_right
         and can_escape_right
@@ -202,7 +207,7 @@ def move():
         and wall_trap_right
         ):
         direction = "right"
-        print(7)
+        decision = "7"
     elif (
         not will_collide_left
         and can_escape_left
@@ -210,7 +215,7 @@ def move():
         and wall_trap_left
         ):
         direction = "left"
-        print(8)
+        decision = "8"
 
     # Move towards closest food if game opening or starving, checking for collisions, can_escape and near_head
     elif (
@@ -221,7 +226,7 @@ def move():
         and not near_head_down
         ):
         direction = "down"
-        print(9)
+        decision = "9"
     elif (
         closest_food is not None and closest_food["y"] < current_pos["y"]
         and (health <= STARVING_THRESHOLD or turn <= OPENING_TURNS)
@@ -230,7 +235,7 @@ def move():
         and not near_head_up
         ):
         direction = "up"
-        print(10)
+        decision = "10"
     elif (
         closest_food is not None and closest_food["x"] > current_pos["x"]
         and (health <= STARVING_THRESHOLD or turn <= OPENING_TURNS)
@@ -239,7 +244,7 @@ def move():
         and not near_head_right
         ):
         direction = "right"
-        print(11)
+        decision = "11"
     elif (
         closest_food is not None and closest_food["x"] < current_pos["x"]
         and (health <= STARVING_THRESHOLD or turn <= OPENING_TURNS)
@@ -248,7 +253,7 @@ def move():
         and not near_head_left
         ):
         direction = "left"
-        print(12)
+        decision = "12"
 
     # Move towards closest food, avoid walls, checking for collisions, can_escape and near_head
     elif (
@@ -259,7 +264,7 @@ def move():
         and not near_head_down
         ):
         direction = "down"
-        print(13)
+        decision = "13"
     elif (
         closest_food is not None and closest_food["y"] < current_pos["y"]
         and not will_collide_up
@@ -268,7 +273,7 @@ def move():
         and not near_head_up
         ):
         direction = "up"
-        print(14)
+        decision = "14"
     elif (
         closest_food is not None and closest_food["x"] > current_pos["x"]
         and not will_collide_right
@@ -277,7 +282,7 @@ def move():
         and not near_head_right
         ):
         direction = "right"
-        print(15)
+        decision = "15"
     elif (
         closest_food is not None and closest_food["x"] < current_pos["x"]
         and not will_collide_left
@@ -286,7 +291,7 @@ def move():
         and not near_head_left
         ):
         direction = "left"
-        print(16)
+        decision = "16"
     
     # Move towards closest snake that I can kill, avoid walls, checking for collisions, can_escape, and near_head
     elif (
@@ -297,7 +302,7 @@ def move():
         and not near_head_down
         ):
         direction = "down"
-        print(17)
+        decision = "17"
     elif (
         closest_weak_head is not None and closest_weak_head["y"] < current_pos["y"]
         and not will_collide_up
@@ -306,7 +311,7 @@ def move():
         and not near_head_up
         ):
         direction = "up"
-        print(18)
+        decision = "18"
     elif (
         closest_weak_head is not None and closest_weak_head["x"] > current_pos["x"]
         and not will_collide_right
@@ -315,7 +320,7 @@ def move():
         and not near_head_right
         ):
         direction = "right"
-        print(19)
+        decision = "19"
     elif (
         closest_weak_head is not None and closest_weak_head["x"] < current_pos["x"]
         and not will_collide_left
@@ -324,7 +329,7 @@ def move():
         and not near_head_left
         ):
         direction = "left"
-        print(20)
+        decision = "20"
     
     # Circle board in safe zone, avoid walls, checking for collisions, can_escape, and near_head
     elif (
@@ -335,7 +340,7 @@ def move():
         and not near_head_down
         ):
         direction = "down"
-        print(21)
+        decision = "21"
     elif (
         not will_collide_up
         and can_escape_up
@@ -344,7 +349,7 @@ def move():
         and not near_head_up
         ):
         direction = "up"
-        print(22)
+        decision = "22"
     elif (
         not will_collide_right
         and can_escape_right
@@ -353,7 +358,7 @@ def move():
         and not near_head_right
         ):
         direction = "right"
-        print(23)
+        decision = "23"
     elif (
         not will_collide_left
         and can_escape_left
@@ -362,7 +367,7 @@ def move():
         and not near_head_left
         ):
         direction = "left"
-        print(24)
+        decision = "24"
 
     # Escape alive, avoid walls, checking for collisions, can_escape, and near_head
     elif (
@@ -372,7 +377,7 @@ def move():
         and not near_head_down
         ):
         direction = "down"
-        print(25)
+        decision = "25"
     elif (
         not will_collide_up
         and can_escape_up
@@ -380,7 +385,7 @@ def move():
         and not near_head_up
         ):
         direction = "up"
-        print(26)
+        decision = "26"
     elif (
         not will_collide_right
         and can_escape_right
@@ -388,7 +393,7 @@ def move():
         and not near_head_right
         ):
         direction = "right"
-        print(27)
+        decision = "27"
     elif (
         not will_collide_left
         and can_escape_left
@@ -396,7 +401,7 @@ def move():
         and not near_head_left
         ):
         direction = "left"
-        print(28)
+        decision = "28"
 
     # Escape alive, checking for collisions, can_escape, and near_head
     elif (
@@ -405,28 +410,28 @@ def move():
         and not near_head_down
         ):
         direction = "down"
-        print(29)
+        decision = "29"
     elif (
         not will_collide_up
         and can_escape_up
         and not near_head_up
         ):
         direction = "up"
-        print(30)
+        decision = "30"
     elif (
         not will_collide_right
         and can_escape_right
         and not near_head_right
         ):
         direction = "right"
-        print(31)
+        decision = "31"
     elif (
         not will_collide_left
         and can_escape_left
         and not near_head_left
         ):
         direction = "left"
-        print(32)
+        decision = "32"
 
     # Escape alive, checking for collisions, can_escape, and headon_death
     elif (
@@ -435,28 +440,28 @@ def move():
         and not headon_death_down
         ):
         direction = "down"
-        print(33)
+        decision = "33"
     elif (
         not will_collide_up
         and can_escape_up
         and not headon_death_up
         ):
         direction = "up"
-        print(34)
+        decision = "34"
     elif (
         not will_collide_right
         and can_escape_right
         and not headon_death_right
         ):
         direction = "right"
-        print(35)
+        decision = "35"
     elif (
         not will_collide_left
         and can_escape_left
         and not headon_death_left
         ):
         direction = "left"
-        print(36)
+        decision = "36"
     
     # Move towards largest area, checking for collisions, and near_head
     elif (
@@ -465,28 +470,28 @@ def move():
         and not near_head_down
         ):
         direction = "down"
-        print(37)
+        decision = "37"
     elif (
         not will_collide_up
         and up_area == max(down_area, up_area, right_area, left_area)
         and not near_head_up
         ):
         direction = "up"
-        print(38)
+        decision = "38"
     elif (
         not will_collide_right
         and right_area == max(down_area, up_area, right_area, left_area)
         and not near_head_right
         ):
         direction = "right"
-        print(39)
+        decision = "39"
     elif (
         not will_collide_left
         and left_area == max(down_area, up_area, right_area, left_area)
         and not near_head_left
         ):
         direction = "left"
-        print(40)
+        decision = "40"
     
     # Move towards largest area, checking for collisions, and headon_death
     elif (
@@ -495,28 +500,28 @@ def move():
         and not headon_death_down
         ):
         direction = "down"
-        print(41)
+        decision = "41"
     elif (
         not will_collide_up
         and up_area == max(down_area, up_area, right_area, left_area)
         and not headon_death_up
         ):
         direction = "up"
-        print(42)
+        decision = "42"
     elif (
         not will_collide_right
         and right_area == max(down_area, up_area, right_area, left_area)
         and not headon_death_right
         ):
         direction = "right"
-        print(43)
+        decision = "43"
     elif (
         not will_collide_left
         and left_area == max(down_area, up_area, right_area, left_area)
         and not headon_death_left
         ):
         direction = "left"
-        print(44)
+        decision = "44"
     
     # Move towards largest area, checking for collisions
     elif (
@@ -524,49 +529,57 @@ def move():
         and down_area == max(down_area, up_area, right_area, left_area)
         ):
         direction = "down"
-        print(45)
+        decision = "45"
     elif (
         not will_collide_up
         and up_area == max(down_area, up_area, right_area, left_area)
         ):
         direction = "up"
-        print(46)
+        decision = "46"
     elif (
         not will_collide_right
         and right_area == max(down_area, up_area, right_area, left_area)
         ):
         direction = "right"
-        print(47)
+        decision = "47"
     elif (
         not will_collide_left
         and left_area == max(down_area, up_area, right_area, left_area)
         ):
         direction = "left"
-        print(48)
+        decision = "48"
 
     # Pray, no escape and accept headon
     elif not will_collide_down:
         direction = "down"
-        print(49)
+        decision = "49"
     elif not will_collide_up:
         direction = "up"
-        print(50)
+        decision = "50"
     elif not will_collide_right:
         direction = "right"
-        print(51)
+        decision = "51"
     elif not will_collide_left:
         direction = "left"
-        print(52)
+        decision = "52"
     
     # Accept death
     else:
         direction = "up"
-        print(53)
+        decision = "53"
     
     # Print to help debug
+    print(decision)
     print("pos: " + json.dumps(current_pos) + "\n" + "dir: " + direction
     + "\n" + "food: " + json.dumps(closest_food) + "\n" + "turn: " + str(data["turn"]))
 
+    if LOGGING:
+        log_file = open(data["game"]["id"] + ".log", "at")
+        log_file.write(decision + "\n")
+        log_file.write("pos: " + json.dumps(current_pos) + "\n" + "dir: " + direction
+        + "\n" + "food: " + json.dumps(closest_food) + "\n" + "turn: " + str(data["turn"]))
+        log_file.close()
+        
     return move_response(direction)
 
 
