@@ -82,11 +82,15 @@ def area_size(board, pos, gone, size, max):
             size = area_size(board, tile, gone, size + 1, max)
     return size
 
-# Find largest area to escape, pos must not be a collision
+# Find largest area to escape
+# TODO test iterating through entire snake for escape
 def check_area(board, you, pos, gone, current_area, max_area):
     for snake in board["snakes"]:
-        if pos == snake["body"][-1]:
-            return you["length"]
+        if pos == snake["body"][-1] or (current_area > 1 and pos == snake["body"][-2]):
+            return max_area - 1
+
+    if will_collide(board, pos, gone):
+        return current_area
 
     current_area += 1
     
@@ -94,7 +98,6 @@ def check_area(board, you, pos, gone, current_area, max_area):
         gone.append(pos)
         largest_area = current_area
         for tile in get_adjacent(pos):
-            if not will_collide(board, tile, gone):
                 new_area = check_area(board, you, tile, gone.copy(), current_area, max_area)
                 if new_area >= max_area:
                     return new_area
