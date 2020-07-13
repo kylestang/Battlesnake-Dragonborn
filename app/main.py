@@ -4,7 +4,7 @@ import bottle
 
 from api import ping_response, start_response, move_response, end_response
 from functions import (get_adjacent, find_closest_food, find_weak_head, will_collide, area_size,
-    check_area, can_escape, distance_from_wall, near_head, headon_death, headon_kill, wall_trap)
+    check_area, can_escape, distance_from_wall, near_head, headon_death, headon_kill, wall_trap, log_data)
 
 # Constants
 MAX_SEARCH = 26
@@ -46,11 +46,7 @@ def ping():
 def start():
     data = bottle.request.json
 
-    print(json.dumps(data))
-    if LOGGING:
-        log_file = open(LOG_LOCATION.format(data["game"]["id"]), "at")
-        log_file.write(json.dumps(data))
-        log_file.close()
+    log_data(LOGGING, LOG_LOCATION.format(data["game"]["id"]), json.dumps(data) + "\n")
 
     color = "#808080"
     head_type = "smile"
@@ -569,17 +565,11 @@ def move():
         direction = "up"
         decision = "53"
     
-    # Print to help debug
-    print(decision)
-    print("pos: " + json.dumps(current_pos) + "\n" + "dir: " + direction
-    + "\n" + "food: " + json.dumps(closest_food) + "\n" + "turn: " + str(data["turn"]))
-
-    if LOGGING:
-        log_file = open(LOG_LOCATION.format(data["game"]["id"]), "at")
-        log_file.write(decision + "\n")
-        log_file.write("pos: " + json.dumps(current_pos) + "\n" + "dir: " + direction
-        + "\n" + "food: " + json.dumps(closest_food) + "\n" + "turn: " + str(data["turn"]) + "\n\n")
-        log_file.close()
+    # Log decision for debugging
+    log_data(LOGGING, LOG_LOCATION.format(data["game"]["id"]),
+        "decision: " + decision + "\npos: " + json.dumps(current_pos) + "\ndir: " + direction
+        + "\nfood: " + json.dumps(closest_food) + "\nturn: " + str(data["turn"]) + "\n\n"
+    )
         
     return move_response(direction)
 
@@ -588,11 +578,7 @@ def move():
 def end():
     data = bottle.request.json
 
-    """
-    TODO: If your snake AI was stateful,
-        clean up any stateful objects here.
-    """
-    print(json.dumps(data))
+    log_data(LOGGING, LOG_LOCATION.format(data["game"]["id"]), json.dumps(data))
 
     return end_response()
 
