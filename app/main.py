@@ -88,28 +88,28 @@ def move():
     else:
         max_area = area_size(board, down, [], 1, min(you["length"], MAX_SEARCH))
         down_area = check_area(board, you, down, [], 0, max_area)
-        log_data(LOGGING, LOG_LOCATION.format(data["game"]["id"]), "max_down: " + max_area + " down_area: " + down_area)
+        log_data(LOGGING, LOG_LOCATION.format(data["game"]["id"]), "max_down: " + str(max_area) + " down_area: " + str(down_area))
 
     if will_collide_up:
         up_area = 0
     else:
         max_area = area_size(board, up, [], 1, min(you["length"], MAX_SEARCH))
         up_area = check_area(board, you, up, [], 0, max_area)
-        log_data(LOGGING, LOG_LOCATION.format(data["game"]["id"]), "max_up: " + max_area + " up_area: " + up_area)
+        log_data(LOGGING, LOG_LOCATION.format(data["game"]["id"]), "max_up: " + str(max_area) + " up_area: " + str(up_area))
     
     if will_collide_right:
         right_area = 0
     else:
         max_area = min(area_size(board, right, [], 1, you["length"]), MAX_SEARCH)
         right_area = check_area(board, you, right, [], 0, max_area)
-        log_data(LOGGING, LOG_LOCATION.format(data["game"]["id"]), "max_right: " + max_area + " right_area: " + right_area)
+        log_data(LOGGING, LOG_LOCATION.format(data["game"]["id"]), "max_right: " + str(max_area) + " right_area: " + str(right_area))
     
     if will_collide_left:
         left_area = 0
     else:
         max_area = min(area_size(board, left, [], 1, you["length"]), MAX_SEARCH)
         left_area = check_area(board, you, left, [], 0, max_area)
-        log_data(LOGGING, LOG_LOCATION.format(data["game"]["id"]), "max_left: " + max_area + " left_area: " + left_area)
+        log_data(LOGGING, LOG_LOCATION.format(data["game"]["id"]), "max_left: " + str(max_area) + " left_area: " + str(left_area))
     
     # can_escape
     can_escape_down = can_escape(you, down_area, MAX_SEARCH)
