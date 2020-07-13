@@ -78,28 +78,34 @@ def will_collide(board, pos, gone):
 def area_size(board, pos, gone, size, max):
     gone.append(pos)
     for tile in get_adjacent(pos):
+        for snake in board["snakes"]:
+            if tile in snake["body"][-2:]:
+                return max
         if size < max and not will_collide(board, tile, gone):
             size = area_size(board, tile, gone, size + 1, max)
     return size
 
-# Find largest area to escape, pos must not be a collision
+# Find largest area to escape
+# TODO test iterating through entire snake for escape
 def check_area(board, you, pos, gone, current_area, max_area):
     for snake in board["snakes"]:
-        if pos == snake["body"][-1]:
-            return you["length"]
+        if pos == snake["body"][-1] or (pos == snake["body"][-2] and current_area > 1):
+            return max_area
+
+    if will_collide(board, pos, gone):
+        return current_area
 
     current_area += 1
-    
+
     if current_area < max_area:
         gone.append(pos)
         largest_area = current_area
         for tile in get_adjacent(pos):
-            if not will_collide(board, tile, gone):
-                new_area = check_area(board, you, tile, gone.copy(), current_area, max_area)
-                if new_area >= max_area:
-                    return new_area
-                if new_area > largest_area:
-                    largest_area = new_area
+            new_area = check_area(board, you, tile, gone.copy(), current_area, max_area)
+            if new_area >= max_area:
+                return new_area
+            if new_area > largest_area:
+                largest_area = new_area
         return largest_area
 
     return current_area
@@ -169,3 +175,11 @@ def wall_trap(board, you, pos):
                     return True
     
     return False
+
+# Logs data
+def log_data(logging, log_location, data):
+    print(data)
+    if logging:
+        log_file = open(log_location, "at")
+        log_file.write(data + "\n")
+        log_file.close()
