@@ -11,7 +11,7 @@ MAX_SEARCH = 26
 STARVING_THRESHOLD = 15
 SAFE_DISTANCE = 2
 OPENING_TURNS = 20
-LOGGING = True
+LOGGING = False
 LOG_LOCATION = "logs/{}.log"
 
 @bottle.route('/')
