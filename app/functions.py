@@ -182,5 +182,5 @@ def log_data(logging, log_location, data):
     print(data)
     if logging:
         log_file = open(log_location, "at")
-        log_file.write(data)
+        log_file.write(data + "\n")
         log_file.close()
