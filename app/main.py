@@ -12,6 +12,7 @@ STARVING_THRESHOLD = 15
 SAFE_DISTANCE = 2
 OPENING_TURNS = 20
 LOGGING = True
+LOG_LOCATION = "logs/{}.log"
 
 @bottle.route('/')
 def index():
@@ -47,7 +48,7 @@ def start():
 
     print(json.dumps(data))
     if LOGGING:
-        log_file = open(data["game"]["id"] + ".log", "at")
+        log_file = open(LOG_LOCATION.format(data["game"]["id"]), "at")
         log_file.write(json.dumps(data))
         log_file.close()
 
@@ -574,10 +575,10 @@ def move():
     + "\n" + "food: " + json.dumps(closest_food) + "\n" + "turn: " + str(data["turn"]))
 
     if LOGGING:
-        log_file = open(data["game"]["id"] + ".log", "at")
+        log_file = open(LOG_LOCATION.format(data["game"]["id"]), "at")
         log_file.write(decision + "\n")
         log_file.write("pos: " + json.dumps(current_pos) + "\n" + "dir: " + direction
-        + "\n" + "food: " + json.dumps(closest_food) + "\n" + "turn: " + str(data["turn"]) + "\n")
+        + "\n" + "food: " + json.dumps(closest_food) + "\n" + "turn: " + str(data["turn"]) + "\n\n")
         log_file.close()
         
     return move_response(direction)
