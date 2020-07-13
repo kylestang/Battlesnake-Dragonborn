@@ -89,7 +89,7 @@ def area_size(board, pos, gone, size, max):
 # TODO test iterating through entire snake for escape
 def check_area(board, you, pos, gone, current_area, max_area):
     for snake in board["snakes"]:
-        if pos == snake["body"][-1] or (pos == snake["body"][-2] and current_area > 0):
+        if pos == snake["body"][-1] or (pos == snake["body"][-2] and current_area > 1):
             return max_area
 
     if will_collide(board, pos, gone):
