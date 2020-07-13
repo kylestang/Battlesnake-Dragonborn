@@ -76,12 +76,11 @@ def will_collide(board, pos, gone):
 
 # Checks size of available area, limited to max
 def area_size(board, pos, gone, size, max):
-    for snake in board["snakes"]:
-        if pos in snake["body"][-2:]:
-            return max
-    
     gone.append(pos)
     for tile in get_adjacent(pos):
+        for snake in board["snakes"]:
+            if tile in snake["body"][-2:]:
+                return max
         if size < max and not will_collide(board, tile, gone):
             size = area_size(board, tile, gone, size + 1, max)
     return size
