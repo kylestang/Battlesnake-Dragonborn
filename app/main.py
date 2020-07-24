@@ -5,7 +5,7 @@ import bottle
 from ctypes import *
 from api import ping_response, start_response, move_response, end_response
 
-decision = CDLL("test.so").decision
+decision = CDLL("app/test.so").decision
 
 class Coordinate(Structure):
     _fields_ = [("x", c_int),
@@ -26,7 +26,7 @@ class Battlesnake(Structure):
 class SnakeArray(Structure):
     _fields_ = [("size", c_int),
                 ("max_size", c_int),
-                ("p_elements"), POINTER(Battlesnake)]
+                ("p_elements", POINTER(Battlesnake))]
 
 class Game(Structure):
     _fields_ = [("timeout", c_int),
@@ -42,7 +42,7 @@ def coord_array(array_size, array_max_size, coord_list):
     return CoordArray(
         size = array_size,
         max_size = array_max_size,
-        p_elements = (Coordinate * array_max_size)(*coord_list)
+        p_elements = (Coordinate * array_max_size)(*[Coordinate(x = pos["x"], y = pos["y"]) for pos in coord_list])
     )
 
 @bottle.route('/')
@@ -91,7 +91,7 @@ def move():
     # Game
     game = Game(
         timeout = data["game"]["timeout"],
-        p_id = data["game"]["id"]
+        p_id = bytes(data["game"]["id"], "utf-8")
     )
 
     # Board
