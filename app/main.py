@@ -125,7 +125,7 @@ def move():
     you = Battlesnake(
         id = 0,
         health = you_object["health"],
-        body = coord_array(len(you_object["body"]), len(you_object["body"], you_object["body"])),
+        body = coord_array(len(you_object["body"]), len(you_object["body"]), you_object["body"]),
         head = Coordinate(x = you_object["head"]["x"], y = you_object["head"]["y"]),
         length = you_object["length"]
     )
@@ -160,6 +160,6 @@ if __name__ == '__main__':
     bottle.run(
         application,
         host=os.getenv('IP', '0.0.0.0'),
-        port=os.getenv('PORT', '8080'),
+        port=os.getenv('PORT', '25567'),
         debug=os.getenv('DEBUG', True)
     )
