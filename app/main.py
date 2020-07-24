@@ -98,16 +98,14 @@ def move():
     food_list = data["board"]["food"]
     food_array = coord_array(len(food_list), len(food_list), food_list)
 
-    snake_list = data["board"]["snakes"]
-    snake_elements = Battlesnake * len(snake_list)
-    for i in range(len(snake_list)):
-        snake_elements[i] = Battlesnake(
-            id = 0 if snake_list[i]["id"] == data["you"]["id"] else i + 10,
-            health = snake_list[i]["health"],
-            body = coord_array(len(snake_list[i]["body"]), len(snake_list[i]["body"]), snake_list[i]["body"]),
-            head = Coordinate(x = snake_list[i]["head"]["x"], y = snake_list[i]["head"]["y"]),
-            length = snake_list[i]["length"]
-        )
+    snake_list = data["board"]["snakes"]    
+    snake_elements = (Battlesnake * len(snake_list))(*[Battlesnake(
+        id = 0 if snake_list[i]["id"] == data["you"]["id"] else i + 10,
+        health = snake_list[i]["health"],
+        body = coord_array(len(snake_list[i]["body"]), len(snake_list[i]["body"]), snake_list[i]["body"]),
+        head = Coordinate(x = snake_list[i]["head"]["x"], y = snake_list[i]["head"]["y"]),
+        length = snake_list[i]["length"]
+    ) for i in range(len(snake_list))])
 
     snake_array = SnakeArray(
         size = len(snake_list),
