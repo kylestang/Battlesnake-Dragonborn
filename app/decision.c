@@ -4,7 +4,7 @@
 #include "constants.h"
 
 // Takes data and returns direction
-int decision(Board board, Battlesnake you, int turn, Game game){
+int decision(Game game, Board board, Battlesnake you, int turn){
     // Initial variables
     Coordinate current_pos = you.head;
     CoordArray adjacent = get_adjacent(current_pos);
