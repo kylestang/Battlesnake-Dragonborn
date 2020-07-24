@@ -19,13 +19,13 @@ bool equals_coord(Coordinate pos1, Coordinate pos2){
 }
 
 // Appends pos to array if there's space, otherwise logs an error
-void append_coord(CoordArray array, Coordinate pos, char *p_game_id){
-    if(array.size < array.max_size){
-        array.p_elements[array.size] = pos;
-        array.size++;
+void append_coord(CoordArray *array, Coordinate pos, char *p_game_id){
+    if(array->size < array->max_size){
+        array->p_elements[array->size] = pos;
+        array->size++;
     } else{
         char data[STRING_SIZE];
-        snprintf(data, STRING_SIZE, "Error: structures.c: append_coord(): array full: size: %d", array.size);
+        snprintf(data, STRING_SIZE, "Error: structures.c: append_coord(): array full: size: %d", array->size);
         log_data(p_game_id, data);
     }
 }
@@ -41,13 +41,13 @@ bool contains_coord(CoordArray array, Coordinate pos){
 }
 
 // Appends snake to array if there's space, otherwise logs an error
-void append_snake(SnakeArray array, Battlesnake snake, char *p_game_id){
-    if(array.size < array.max_size){
-        array.p_elements[array.size] = snake;
-        array.size++;
+void append_snake(SnakeArray *array, Battlesnake snake, char *p_game_id){
+    if(array->size < array->max_size){
+        array->p_elements[array->size] = snake;
+        array->size++;
     } else{
         char data[STRING_SIZE];
-        snprintf(data, STRING_SIZE, "Error: structures.c: append_snake(): array full: size: %d", array.size);
+        snprintf(data, STRING_SIZE, "Error: structures.c: append_snake(): array full: size: %d", array->size);
         log_data(p_game_id, data);
     }
 }
