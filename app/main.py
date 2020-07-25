@@ -96,7 +96,9 @@ def move():
 
     # Board
     food_list = data["board"]["food"]
+    print("food list: " + str(food_list))
     food_array = coord_array(len(food_list), len(food_list), food_list)
+    print("food array: " + str([i for i in food_array]))
 
     snake_list = data["board"]["snakes"]    
     snake_elements = (Battlesnake * len(snake_list))(*[Battlesnake(
