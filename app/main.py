@@ -42,7 +42,7 @@ def coord_array(array_size, array_max_size, coord_list):
     return CoordArray(
         size = array_size,
         max_size = array_max_size,
-        p_elements = (Coordinate * array_max_size)(*[Coordinate(x = pos["x"], y = pos["y"]) for pos in coord_list])
+        p_elements = (Coordinate * array_max_size)([Coordinate(x = pos["x"], y = pos["y"]) for pos in coord_list])
     )
 
 @bottle.route('/')
