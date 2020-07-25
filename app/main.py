@@ -42,7 +42,7 @@ def coord_array(array_size, array_max_size, coord_list):
     return CoordArray(
         size = array_size,
         max_size = array_max_size,
-        p_elements = (Coordinate * array_max_size)([Coordinate(x = pos["x"], y = pos["y"]) for pos in coord_list])
+        p_elements = (Coordinate * array_max_size)(*[Coordinate(x = pos["x"], y = pos["y"]) for pos in coord_list])
     )
 
 @bottle.route('/')
@@ -98,7 +98,8 @@ def move():
     food_list = data["board"]["food"]
     print("food list: " + str(food_list))
     food_array = coord_array(len(food_list), len(food_list), food_list)
-    print("food array: " + str([i for i in food_array.p_elements]))
+    for i in food_array.p_elements:
+        print("x: " + str(i.x) + "y: " + str(i.y))
 
     snake_list = data["board"]["snakes"]    
     snake_elements = (Battlesnake * len(snake_list))(*[Battlesnake(
