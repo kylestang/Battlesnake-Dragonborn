@@ -76,7 +76,7 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
         left_area = check_area(game, board, left, coord_array(max_area, gone_pointer), 0, max_area);
 
         char p_data[STRING_SIZE];
-        snprintf(p_data, STRING_SIZE, "max_left: %d left_area: %d", max_area, up_area);
+        snprintf(p_data, STRING_SIZE, "max_left: %d left_area: %d", max_area, left_area);
         log_data(game->p_id, p_data);
     }
 
