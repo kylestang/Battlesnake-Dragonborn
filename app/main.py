@@ -5,7 +5,7 @@ import bottle
 from ctypes import *
 from api import ping_response, start_response, move_response, end_response
 
-decision = CDLL("app/test.so").decision
+decision = CDLL("app/decision.so").decision
 
 class Coordinate(Structure):
     _fields_ = [("x", c_int),
@@ -135,7 +135,7 @@ def move():
     # Turn
     turn = data["turn"]
 
-    result = decision(game, board, you, turn)
+    result = decision(byref(game), byref(board), byref(you), turn)
 
     if result == 0: direction = "down"
     elif result == 1: direction = "up"

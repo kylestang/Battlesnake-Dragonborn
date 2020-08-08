@@ -4,71 +4,83 @@
 #include "constants.h"
 
 // Takes data and returns direction
-int decision(Game game, Board board, Battlesnake you, int turn){
+int decision(Game *game, Board *board, Battlesnake *you, int turn){
+    // Null variables
+    Coordinate *null_coord;
+    
+    // mallocs
+
+
+
     // Initial variables
-    Coordinate current_pos = you.head;
+    Coordinate current_pos = you->head;
     CoordArray adjacent = get_adjacent(current_pos);
     Coordinate down = adjacent.p_elements[0];
     Coordinate up = adjacent.p_elements[1];
     Coordinate right = adjacent.p_elements[2];
     Coordinate left = adjacent.p_elements[3];
-    int health = you.health;
+    int health = you->health;
 
     // Data
     // closest_food
-    CoordArray closest_food = find_closest_food(game, board, you, current_pos, turn, STARVING_THRESHOLD, OPENING_TURNS);
+    Coordinate closest_food_pointer[1];
+    CoordArray closest_food = find_closest_food(game, board, you, current_pos, turn, STARVING_THRESHOLD, OPENING_TURNS, closest_food_pointer);
 
     // closest_weak_head
-    CoordArray closest_weak_head = find_weak_head(game, board, you, current_pos);
+    Coordinate closest_head_pointer[1];
+    CoordArray closest_weak_head = find_weak_head(game, board, you, current_pos, closest_head_pointer);
 
     // will_collide
-    bool will_collide_down = will_collide(board, down, coord_array(0));
-    bool will_collide_up = will_collide(board, up, coord_array(0));
-    bool will_collide_right = will_collide(board, right, coord_array(0));
-    bool will_collide_left = will_collide(board, left, coord_array(0));
+    bool will_collide_down = will_collide(board, down, coord_array(0, null_coord));
+    bool will_collide_up = will_collide(board, up, coord_array(0, null_coord));
+    bool will_collide_right = will_collide(board, right, coord_array(0, null_coord));
+    bool will_collide_left = will_collide(board, left, coord_array(0, null_coord));
 
     // area_size, check_area
-    int search = you.length < MAX_SEARCH ? you.length : MAX_SEARCH;
+    int search = you->length < MAX_SEARCH ? you->length : MAX_SEARCH;
+    Coordinate *gone_pointer = malloc(search * sizeof(Coordinate));
 
     int down_area = 0;
     if(!will_collide_down){
-        int max_area = area_size(game, board, down, coord_array(search), 1, search);
-        down_area = check_area(game, board, down, coord_array(max_area), 0, max_area);
+        int max_area = area_size(game, board, down, coord_array(search, gone_pointer), 1, search);
+        down_area = check_area(game, board, down, coord_array(max_area, gone_pointer), 0, max_area);
         
         char p_data[STRING_SIZE];
         snprintf(p_data, STRING_SIZE, "max_down: %d down_area: %d", max_area, down_area);
-        log_data(game.p_id, p_data);
+        log_data(game->p_id, p_data);
     }
 
     int up_area = 0;
     if(!will_collide_up){
-        int max_area = area_size(game, board, up, coord_array(search), 1, search);
-        up_area = check_area(game, board, up, coord_array(max_area), 0, max_area);
+        int max_area = area_size(game, board, up, coord_array(search, gone_pointer), 1, search);
+        up_area = check_area(game, board, up, coord_array(max_area, gone_pointer), 0, max_area);
 
         char p_data[STRING_SIZE];
         snprintf(p_data, STRING_SIZE, "max_up: %d up_area: %d", max_area, up_area);
-        log_data(game.p_id, p_data);
+        log_data(game->p_id, p_data);
     }
 
     int right_area = 0;
     if(!will_collide_right){
-        int max_area = area_size(game, board, right, coord_array(search), 1, search);
-        right_area = check_area(game, board, right, coord_array(max_area), 0, max_area);
+        int max_area = area_size(game, board, right, coord_array(search, gone_pointer), 1, search);
+        right_area = check_area(game, board, right, coord_array(max_area, gone_pointer), 0, max_area);
 
         char p_data[STRING_SIZE];
         snprintf(p_data, STRING_SIZE, "max_right: %d right_area: %d", max_area, right_area);
-        log_data(game.p_id, p_data);
+        log_data(game->p_id, p_data);
     }
 
     int left_area = 0;
     if(!will_collide_left){
-        int max_area = area_size(game, board, left, coord_array(search), 1, search);
-        left_area = check_area(game, board, left, coord_array(max_area), 0, max_area);
+        int max_area = area_size(game, board, left, coord_array(search, gone_pointer), 1, search);
+        left_area = check_area(game, board, left, coord_array(max_area, gone_pointer), 0, max_area);
 
         char p_data[STRING_SIZE];
         snprintf(p_data, STRING_SIZE, "max_left: %d left_area: %d", max_area, up_area);
-        log_data(game.p_id, p_data);
+        log_data(game->p_id, p_data);
     }
+
+    free(gone_pointer);
 
     // can_escape
     bool can_escape_down = can_escape(you, down_area, MAX_SEARCH);
@@ -538,10 +550,10 @@ int decision(Game game, Board board, Battlesnake you, int turn){
     // Log data
     char data[STRING_SIZE];
     if(closest_food.size == 1){snprintf(data, STRING_SIZE, "food: x:%d y:%d", closest_food.p_elements[0].x, closest_food.p_elements[0].y);}
-    log_data(game.p_id, data);
+    log_data(game->p_id, data);
     snprintf(data, STRING_SIZE, "closest_food_size: %d\nhealth: %d\ndecision: %d\npos: x:%d y:%d\ndir: %d\nturn: %d\n",
         closest_food.size, health, decision, current_pos.x, current_pos.y, direction, turn);
-    log_data(game.p_id, data);
+    log_data(game->p_id, data);
 
     return direction;
 }

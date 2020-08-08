@@ -1,1 +1,1 @@
-gcc -shared -Wall -g -o test.so -fPIC *.c
+gcc -shared -Wall -g -o decision.so -fPIC *.c

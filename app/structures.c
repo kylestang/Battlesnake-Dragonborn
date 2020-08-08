@@ -3,13 +3,20 @@
 #include "structures.h"
 #include "constants.h"
 
+// Returns an instance of Coordinate
+Coordinate coordinate(int x, int y){
+    Coordinate pos;
+    pos.x = x;
+    pos.y = y;
+    return pos;
+}
+
 // Returns an instance of CoordArray limited to max_size
-CoordArray coord_array(int max_size){
-    Coordinate elements[max_size];
+CoordArray coord_array(int max_size, Coordinate *p_elements){
     CoordArray array;
     array.size = 0;
     array.max_size = max_size;
-    array.p_elements = elements;
+    array.p_elements = p_elements;
     return array;
 }
 
