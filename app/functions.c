@@ -2,21 +2,15 @@
 #include <stdlib.h>
 #include "functions.h"
 
-// Returns an array of adjacent tiles in order down, up, right, left
-CoordArray get_adjacent(Coordinate pos){
-    Coordinate down = coordinate(pos.x, pos.y + 1);
-    Coordinate up = coordinate(pos.x, pos.y - 1);
-    Coordinate right = coordinate(pos.x + 1, pos.y);
-    Coordinate left = coordinate(pos.x - 1, pos.y);
+// Stores an array of adjacent tiles in order down, up, right, left
+void get_adjacent(Coordinate pos, CoordArray *adjacent){
+    adjacent->p_elements[0] = coordinate(pos.x, pos.y + 1);
+    adjacent->p_elements[1] = coordinate(pos.x, pos.y - 1);
+    adjacent->p_elements[2] = coordinate(pos.x + 1, pos.y);
+    adjacent->p_elements[3] = coordinate(pos.x - 1, pos.y);
 
-    Coordinate coords[] = {down, up, right, left};
-
-    CoordArray adjacent;
-    adjacent.size = 4;
-    adjacent.max_size = 4;
-    adjacent.p_elements = coords;
-
-    return adjacent;
+    adjacent->size = 4;
+    adjacent->max_size = 4;
 }
 
 // Returns an array of size 1 containing the closest food, if it exists
@@ -101,11 +95,13 @@ bool will_collide(Board *board, Coordinate pos, CoordArray gone){
 // Returns the size of the area available from pos, limited to max_area
 int area_size(Game *game, Board *board, Coordinate pos, CoordArray gone, int size, int max_area){
     CoordArray adjacent;
+    Coordinate adjacent_pointer[4];
+    adjacent.p_elements = adjacent_pointer;
     Coordinate tile;
     Battlesnake snake;
 
     append_coord(&gone, pos, game->p_id);
-    adjacent = get_adjacent(pos);
+    get_adjacent(pos, &adjacent);
     for(int i = 0; i < adjacent.size; i++){
         tile = adjacent.p_elements[i];
         for(int j = 0; j < board->snakes.size; j++){
@@ -118,6 +114,9 @@ int area_size(Game *game, Board *board, Coordinate pos, CoordArray gone, int siz
 
         if(size < max_area && !will_collide(board, tile, gone)){
             size = area_size(game, board, tile, gone, size + 1, max_area);
+            if(size >= max_area){
+                return max_area;
+            }
         }
     }
     return size;
@@ -128,6 +127,8 @@ int check_area(Game *game, Board *board, Coordinate pos, CoordArray gone, int cu
     Battlesnake snake;
     int largest_area, new_area;
     CoordArray adjacent;
+    Coordinate adjacent_pointer[4];
+    adjacent.p_elements = adjacent_pointer;
     Coordinate tile;
 
     for(int i = 0; i < board->snakes.size; i++){
@@ -147,7 +148,7 @@ int check_area(Game *game, Board *board, Coordinate pos, CoordArray gone, int cu
     if(current_area < max_area){
         append_coord(&gone, pos, game->p_id);
         largest_area = current_area;
-        adjacent = get_adjacent(pos);
+        get_adjacent(pos, &adjacent);
         for(int i = 0; i < adjacent.size; i++){
             tile = adjacent.p_elements[i];
             new_area = check_area(game, board, tile, gone, current_area, max_area);
@@ -181,11 +182,13 @@ bool distance_from_wall(Board *board, Coordinate pos, int distance){
 bool near_head(Board *board, Battlesnake *you, Coordinate pos){
     Battlesnake snake;
     CoordArray adjacent;
+    Coordinate adjacent_pointer[4];
+    adjacent.p_elements = adjacent_pointer;
 
     for(int i = 0; i < board->snakes.size; i++){
         snake = board->snakes.p_elements[i];
         if(snake.id != you->id && snake.length >= you->length){
-            adjacent = get_adjacent(snake.head);
+            get_adjacent(snake.head, &adjacent);
             if(contains_coord(adjacent, pos)){
                 return true;
             }
@@ -217,6 +220,8 @@ bool headon_kill(Board *board, Battlesnake *you, Coordinate pos){
     Battlesnake snake;
     bool can_kill;
     CoordArray adjacent;
+    Coordinate adjacent_pointer[4];
+    adjacent.p_elements = adjacent_pointer;
     Coordinate tile;
     Coordinate *null_coord;
 
@@ -224,7 +229,7 @@ bool headon_kill(Board *board, Battlesnake *you, Coordinate pos){
         snake = board->snakes.p_elements[i];
         can_kill = true;
 
-        adjacent = get_adjacent(snake.head);
+        get_adjacent(snake.head, &adjacent);
         if(snake.length >= you->length || !contains_coord(adjacent, pos)){
             can_kill = false;
         } else{
@@ -246,6 +251,8 @@ bool headon_kill(Board *board, Battlesnake *you, Coordinate pos){
 bool wall_trap(Board *board, Battlesnake *you, Coordinate pos){
     Battlesnake snake;
     CoordArray adjacent;
+    Coordinate adjacent_pointer[4];
+    adjacent.p_elements = adjacent_pointer;
     Coordinate tile;
 
     if(!distance_from_wall(board, pos, 0) || distance_from_wall(board, you->head, 0)){
@@ -255,7 +262,7 @@ bool wall_trap(Board *board, Battlesnake *you, Coordinate pos){
     for(int i = 0; i < board->snakes.size; i++){
         snake = board->snakes.p_elements[i];
         if(distance_from_wall(board, snake.head, 0) && snake.id != you->id){
-            adjacent = get_adjacent(snake.head);
+            get_adjacent(snake.head, &adjacent);
             for(int j = 0; j < adjacent.size; j++){
                 tile = adjacent.p_elements[j];
                 if(contains_coord(you->body, tile)){

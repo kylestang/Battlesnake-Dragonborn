@@ -1,6 +1,6 @@
 #include "structures.h"
 
-CoordArray get_adjacent(Coordinate pos);
+void get_adjacent(Coordinate pos, CoordArray *adjacent);
 CoordArray find_closest_food(Game *game, Board *board, Battlesnake *you, Coordinate pos, int turn, int starving_threshold, int opening_turns, Coordinate* closest_food_pointer);
 CoordArray find_weak_head(Game *game, Board *board, Battlesnake *you, Coordinate pos, Coordinate* closest_head_pointer);
 bool will_collide(Board *board, Coordinate pos, CoordArray gone);

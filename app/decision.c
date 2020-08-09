@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include "functions.h"
@@ -14,7 +15,10 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
 
     // Initial variables
     Coordinate current_pos = you->head;
-    CoordArray adjacent = get_adjacent(current_pos);
+    CoordArray adjacent;
+    Coordinate adjacent_pointer[4];
+    adjacent.p_elements = adjacent_pointer;
+    get_adjacent(current_pos, &adjacent);
     Coordinate down = adjacent.p_elements[0];
     Coordinate up = adjacent.p_elements[1];
     Coordinate right = adjacent.p_elements[2];
