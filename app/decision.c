@@ -553,10 +553,12 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
 
     // Log data
     char data[STRING_SIZE];
-    if(closest_food.size == 1){snprintf(data, STRING_SIZE, "food: x:%d y:%d", closest_food.p_elements[0].x, closest_food.p_elements[0].y);}
-    log_data(game->p_id, data);
-    snprintf(data, STRING_SIZE, "closest_food_size: %d\nhealth: %d\ndecision: %d\npos: x:%d y:%d\ndir: %d\nturn: %d\n",
-        closest_food.size, health, decision, current_pos.x, current_pos.y, direction, turn);
+    if(closest_food.size == 1){
+        snprintf(data, STRING_SIZE, "food: x:%d y:%d", closest_food.p_elements[0].x, closest_food.p_elements[0].y);
+        log_data(game->p_id, data);
+    }
+    snprintf(data, STRING_SIZE, "health: %d\ndecision: %d\npos: x:%d y:%d\ndir: %d\nturn: %d\n",
+        health, decision, current_pos.x, current_pos.y, direction, turn);
     log_data(game->p_id, data);
 
     return direction;
