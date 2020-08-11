@@ -106,11 +106,11 @@ int check_area(Game *game, Board *board, Battlesnake *you, Coordinate pos, Coord
 
     for(int i = 0; i < board->snakes.size; i++){
         snake = board->snakes.p_elements[i];
-        for(int j = 0; j < snake.length; j++){
+        for(int j = 0; j <= max_area; j++){
             if(
-                ((snake.id == you->id && current_area - food_count >= snake.length - j - 1)
-                || (snake.id != you->id && current_area >= snake.length - j - 1))
-                && equals_coord(pos, snake.body.p_elements[j])
+                ((snake.id == you->id && current_area - food_count >= j)
+                || (snake.id != you->id && current_area >= j))
+                && equals_coord(pos, snake.body.p_elements[snake.length - j - 1])
             ){
                 return max_area;
             }
