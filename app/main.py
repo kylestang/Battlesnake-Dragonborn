@@ -36,6 +36,7 @@ class Board(Structure):
     _fields_ = [("height", c_int),
                 ("width", c_int),
                 ("food", CoordArray),
+                ("hazards", CoordArray),
                 ("snakes", SnakeArray)]
 
 def coord_array(array_size, array_max_size, coord_list):
@@ -98,6 +99,9 @@ def move():
     food_list = data["board"]["food"]
     food_array = coord_array(len(food_list), len(food_list), food_list)
 
+    hazard_list = data["board"]["hazards"]
+    hazard_array = coord_array(len(hazard_list), len(hazard_list), hazard_list)
+
     snake_list = data["board"]["snakes"]    
     snake_elements = (Battlesnake * len(snake_list))(*[Battlesnake(
         id = 0 if snake_list[i]["id"] == data["you"]["id"] else i + 10,
@@ -117,6 +121,7 @@ def move():
         height = data["board"]["height"],
         width = data["board"]["width"],
         food = food_array,
+        hazards = hazard_array,
         snakes = snake_array
     )
 

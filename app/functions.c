@@ -22,7 +22,7 @@ CoordArray find_closest_food(Game *game, Board *board, Battlesnake *you, Coordin
     for(int i = 0; i < board->food.size; i++){
         food = board->food.p_elements[i];
 
-        if(!distance_from_wall(board, food, 0) || you->health <= starving_threshold || turn <= opening_turns){
+        if((!distance_from_wall(board, food, 0) || you->health <= starving_threshold || turn <= opening_turns) && !contains_coord(board->hazards, food)){
             distance = abs(food.x - pos.x) + abs(food.y - pos.y);
             if(closest_food.size == 0){
                 append_coord(&closest_food, food, game->p_id);
