@@ -134,7 +134,7 @@ int check_area(Game *game, Board *board, Coordinate pos, CoordArray gone, int cu
     for(int i = 0; i < board->snakes.size; i++){
         snake = board->snakes.p_elements[i];
         for(int j = 0; j < snake.length; j++){
-            if(current_area >= snake.length - j && equals_coord(pos, snake.body.p_elements[j])){
+            if(current_area >= snake.length - j - 1 && equals_coord(pos, snake.body.p_elements[j])){
                 return max_area;
             }
         }
