@@ -91,37 +91,6 @@ bool will_collide(Board *board, Coordinate pos, CoordArray gone){
     return false;
 }
 
-// Returns the size of the area available from pos, limited to max_area
-int area_size(Game *game, Board *board, Coordinate pos, CoordArray gone, int size, int max_area){
-    CoordArray adjacent;
-    Coordinate adjacent_pointer[4];
-    adjacent.p_elements = adjacent_pointer;
-    Coordinate tile;
-    Battlesnake snake;
-
-    append_coord(&gone, pos, game->p_id);
-    get_adjacent(pos, &adjacent);
-    for(int i = 0; i < adjacent.size; i++){
-        tile = adjacent.p_elements[i];
-        for(int j = 0; j < board->snakes.size; j++){
-            snake = board->snakes.p_elements[j];
-            for(int k = 0; k < snake.length; k++){
-                if(size >= snake.length - k && equals_coord(tile, snake.body.p_elements[j])){
-                    return max_area;
-                }
-            }
-        }
-
-        if(size < max_area && !will_collide(board, tile, gone)){
-            size = area_size(game, board, tile, gone, size + 1, max_area);
-            if(size >= max_area){
-                return max_area;
-            }
-        }
-    }
-    return size;
-}
-
 // Returns the longest path a snake can take, limited to max_area
 int check_area(Game *game, Board *board, Battlesnake *you, Coordinate pos, CoordArray gone, int current_area, int food_count, int max_area){
     Battlesnake snake;

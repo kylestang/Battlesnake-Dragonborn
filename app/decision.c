@@ -37,12 +37,11 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
     bool will_collide_left = will_collide(board, left, coord_array(0, null_coord));
 
     // area_size, check_area
-    int search = you->length < MAX_SEARCH ? you->length : MAX_SEARCH;
-    Coordinate *gone_pointer = malloc(search * sizeof(Coordinate));
+    int max_area = you->length < MAX_SEARCH ? you->length : MAX_SEARCH;
+    Coordinate *gone_pointer = malloc(max_area * sizeof(Coordinate));
 
     int down_area = 0;
     if(!will_collide_down){
-        int max_area = area_size(game, board, down, coord_array(search, gone_pointer), 1, search);
         down_area = check_area(game, board, you, down, coord_array(max_area, gone_pointer), 0, 0, max_area);
         
         char p_data[STRING_SIZE];
@@ -52,7 +51,6 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
 
     int up_area = 0;
     if(!will_collide_up){
-        int max_area = area_size(game, board, up, coord_array(search, gone_pointer), 1, search);
         up_area = check_area(game, board, you, up, coord_array(max_area, gone_pointer), 0, 0, max_area);
 
         char p_data[STRING_SIZE];
@@ -62,7 +60,6 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
 
     int right_area = 0;
     if(!will_collide_right){
-        int max_area = area_size(game, board, right, coord_array(search, gone_pointer), 1, search);
         right_area = check_area(game, board, you, right, coord_array(max_area, gone_pointer), 0, 0, max_area);
 
         char p_data[STRING_SIZE];
@@ -72,7 +69,6 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
 
     int left_area = 0;
     if(!will_collide_left){
-        int max_area = area_size(game, board, left, coord_array(search, gone_pointer), 1, search);
         left_area = check_area(game, board, you, left, coord_array(max_area, gone_pointer), 0, 0, max_area);
 
         char p_data[STRING_SIZE];
