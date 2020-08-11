@@ -44,6 +44,7 @@ typedef struct
     int height;
     int width;
     CoordArray food;
+    CoordArray hazards;
     SnakeArray snakes;
 } Board;
 
