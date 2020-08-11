@@ -8,10 +8,6 @@
 int decision(Game *game, Board *board, Battlesnake *you, int turn){
     // Null variables
     Coordinate *null_coord;
-    
-    // mallocs
-
-
 
     // Initial variables
     Coordinate current_pos = you->head;
