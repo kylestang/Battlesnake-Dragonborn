@@ -106,7 +106,7 @@ int area_size(Game *game, Board *board, Coordinate pos, CoordArray gone, int siz
         for(int j = 0; j < board->snakes.size; j++){
             snake = board->snakes.p_elements[j];
             for(int k = 0; k < snake.length; k++){
-                if(size >= snake.length - j && equals_coord(tile, snake.body.p_elements[j])){
+                if(size >= snake.length - k && equals_coord(tile, snake.body.p_elements[j])){
                     return max_area;
                 }
             }
