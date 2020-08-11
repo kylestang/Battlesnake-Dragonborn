@@ -105,9 +105,10 @@ int area_size(Game *game, Board *board, Coordinate pos, CoordArray gone, int siz
         tile = adjacent.p_elements[i];
         for(int j = 0; j < board->snakes.size; j++){
             snake = board->snakes.p_elements[j];
-            if(equals_coord(tile, snake.body.p_elements[snake.length - 1]) 
-            || equals_coord(tile, snake.body.p_elements[snake.length - 2])){
-                return max_area;
+            for(int k = 0; k < snake.length; k++){
+                if(size >= snake.length - j && equals_coord(tile, snake.body.p_elements[j])){
+                    return max_area;
+                }
             }
         }
 
@@ -132,9 +133,10 @@ int check_area(Game *game, Board *board, Coordinate pos, CoordArray gone, int cu
 
     for(int i = 0; i < board->snakes.size; i++){
         snake = board->snakes.p_elements[i];
-        if(equals_coord(pos, snake.body.p_elements[snake.length - 1])
-        ||(equals_coord(pos, snake.body.p_elements[snake.length - 2]) && current_area > 1)){
-            return max_area;
+        for(int j = 0; j < snake.length; j++){
+            if(current_area >= snake.length - j && equals_coord(pos, snake.body.p_elements[j])){
+                return max_area;
+            }
         }
     }
 
