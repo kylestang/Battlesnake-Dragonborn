@@ -123,7 +123,7 @@ int area_size(Game *game, Board *board, Coordinate pos, CoordArray gone, int siz
 }
 
 // Returns the longest path a snake can take, limited to max_area
-int check_area(Game *game, Board *board, Coordinate pos, CoordArray gone, int current_area, int max_area){
+int check_area(Game *game, Board *board, Battlesnake *you, Coordinate pos, CoordArray gone, int current_area, int food_count, int max_area){
     Battlesnake snake;
     int largest_area, new_area;
     CoordArray adjacent;
@@ -131,10 +131,18 @@ int check_area(Game *game, Board *board, Coordinate pos, CoordArray gone, int cu
     adjacent.p_elements = adjacent_pointer;
     Coordinate tile;
 
+    if(contains_coord(board->food, pos)){
+        food_count++;
+    }
+
     for(int i = 0; i < board->snakes.size; i++){
         snake = board->snakes.p_elements[i];
         for(int j = 0; j < snake.length; j++){
-            if(current_area >= snake.length - j - 1 && equals_coord(pos, snake.body.p_elements[j])){
+            if(
+                ((snake.id == you->id && current_area - food_count >= snake.length - j - 1)
+                || (snake.id != you->id && current_area >= snake.length - j - 1))
+                && equals_coord(pos, snake.body.p_elements[j])
+            ){
                 return max_area;
             }
         }
@@ -152,7 +160,7 @@ int check_area(Game *game, Board *board, Coordinate pos, CoordArray gone, int cu
         get_adjacent(pos, &adjacent);
         for(int i = 0; i < adjacent.size; i++){
             tile = adjacent.p_elements[i];
-            new_area = check_area(game, board, tile, gone, current_area, max_area);
+            new_area = check_area(game, board, you, tile, gone, current_area, food_count, max_area);
             if(new_area >= max_area){
                 return max_area;
             }
