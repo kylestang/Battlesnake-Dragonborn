@@ -46,7 +46,7 @@ CoordArray find_weak_head(Game *game, Board *board, Battlesnake *you, Coordinate
     for(int i = 0; i < board->snakes.size; i++){
         snake = board->snakes.p_elements[i];
 
-        if(snake.length < you->length){
+        if(snake.length < you->length && !contains_coord(board->hazards, snake.head)){
             head = snake.head;
             distance = abs(head.x - pos.x) + abs(head.y - pos.y);
             if(closest_head.size == 0){

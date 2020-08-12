@@ -36,6 +36,12 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
     bool will_collide_right = will_collide(board, right, coord_array(0, null_coord));
     bool will_collide_left = will_collide(board, left, coord_array(0, null_coord));
 
+    // Check for hazards
+    bool hazard_down = contains_coord(board->hazards, down);
+    bool hazard_up = contains_coord(board->hazards, up);
+    bool hazard_right = contains_coord(board->hazards, right);
+    bool hazard_left = contains_coord(board->hazards, left);
+
     // area_size, check_area
     int max_area = you->length < MAX_SEARCH ? you->length : MAX_SEARCH;
     Coordinate *gone_pointer = malloc(max_area * sizeof(Coordinate));
@@ -303,9 +309,10 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
         direction = e_left;
         decision = 20;
     
-    // Circle board in safe zone, avoid walls, checking for collisions, can_escape, and near_head
+    // Circle board in safe zone, avoid walls, hazards, checking for collisions, can_escape, and near_head
     }else if(
         !will_collide_down
+        && !hazard_down
         && can_escape_down
         && !against_wall_down
         && safe_zone_down
@@ -315,6 +322,7 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
         decision = 21;
     }else if(
         !will_collide_up
+        && !hazard_up
         && can_escape_up
         && !against_wall_up
         && safe_zone_up
@@ -324,6 +332,7 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
         decision = 22;
     }else if(
         !will_collide_right
+        && !hazard_right
         && can_escape_right
         && !against_wall_right
         && safe_zone_right
@@ -333,6 +342,7 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
         decision = 23;
     }else if(
         !will_collide_left
+        && !hazard_left
         && can_escape_left
         && !against_wall_left
         && safe_zone_left
@@ -341,9 +351,10 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
         direction = e_left;
         decision = 24;
 
-    // Escape alive, avoid walls, checking for collisions, can_escape, and near_head
+    // Escape alive, avoid walls, hazards, checking for collisions, can_escape, and near_head
     }else if(
         !will_collide_down
+        && !hazard_down
         && can_escape_down
         && !against_wall_down
         && !near_head_down
@@ -352,6 +363,7 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
         decision = 25;
     }else if(
         !will_collide_up
+        && !hazard_up
         && can_escape_up
         && !against_wall_up
         && !near_head_up
@@ -360,6 +372,7 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
         decision = 26;
     }else if(
         !will_collide_right
+        && !hazard_right
         && can_escape_right
         && !against_wall_right
         && !near_head_right
@@ -368,12 +381,47 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
         decision = 27;
     }else if(
         !will_collide_left
+        && !hazard_left
         && can_escape_left
         && !against_wall_left
         && !near_head_left
     ){
         direction = e_left;
         decision = 28;
+    
+    // Escape alive, avoid walls, checking for collisions, can_escape, and near_head
+    }else if(
+        !will_collide_down
+        && can_escape_down
+        && !against_wall_down
+        && !near_head_down
+    ){
+        direction = e_down;
+        decision = 29;
+    }else if(
+        !will_collide_up
+        && can_escape_up
+        && !against_wall_up
+        && !near_head_up
+    ){
+        direction = e_up;
+        decision = 30;
+    }else if(
+        !will_collide_right
+        && can_escape_right
+        && !against_wall_right
+        && !near_head_right
+    ){
+        direction = e_right;
+        decision = 31;
+    }else if(
+        !will_collide_left
+        && can_escape_left
+        && !against_wall_left
+        && !near_head_left
+    ){
+        direction = e_left;
+        decision = 32;
 
     // Escape alive, checking for collisions, can_escape, and near_head
     }else if(
@@ -382,28 +430,28 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
         && !near_head_down
     ){
         direction = e_down;
-        decision = 29;
+        decision = 33;
     }else if(
         !will_collide_up
         && can_escape_up
         && !near_head_up
     ){
         direction = e_up;
-        decision = 30;
+        decision = 34;
     }else if(
         !will_collide_right
         && can_escape_right
         && !near_head_right
     ){
         direction = e_right;
-        decision = 31;
+        decision = 35;
     }else if(
         !will_collide_left
         && can_escape_left
         && !near_head_left
     ){
         direction = e_left;
-        decision = 32;
+        decision = 36;
 
     // Escape alive, checking for collisions, can_escape, and headon_death
     }else if(
@@ -412,28 +460,28 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
         && !headon_death_down
     ){
         direction = e_down;
-        decision = 33;
+        decision = 37;
     }else if(
         !will_collide_up
         && can_escape_up
         && !headon_death_up
     ){
         direction = e_up;
-        decision = 34;
+        decision = 38;
     }else if(
         !will_collide_right
         && can_escape_right
         && !headon_death_right
     ){
         direction = e_right;
-        decision = 35;
+        decision = 39;
     }else if(
         !will_collide_left
         && can_escape_left
         && !headon_death_left
     ){
         direction = e_left;
-        decision = 36;
+        decision = 40;
     
     // Move towards largest area, checking for collisions, and near_head
     }else if(
@@ -442,28 +490,28 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
         && !near_head_down
     ){
         direction = e_down;
-        decision = 37;
+        decision = 41;
     }else if(
         !will_collide_up
         && up_area == max(down_area, up_area, right_area, left_area)
         && !near_head_up
     ){
         direction = e_up;
-        decision = 38;
+        decision = 42;
     }else if(
         !will_collide_right
         && right_area == max(down_area, up_area, right_area, left_area)
         && !near_head_right
     ){
         direction = e_right;
-        decision = 39;
+        decision = 43;
     }else if(
         !will_collide_left
         && left_area == max(down_area, up_area, right_area, left_area)
         && !near_head_left
     ){
         direction = e_left;
-        decision = 40;
+        decision = 44;
     
     // Move towards largest area, checking for collisions, and headon_death
     }else if(
@@ -472,28 +520,28 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
         && !headon_death_down
     ){
         direction = e_down;
-        decision = 41;
+        decision = 45;
     }else if(
         !will_collide_up
         && up_area == max(down_area, up_area, right_area, left_area)
         && !headon_death_up
     ){
         direction = e_up;
-        decision = 42;
+        decision = 46;
     }else if(
         !will_collide_right
         && right_area == max(down_area, up_area, right_area, left_area)
         && !headon_death_right
     ){
         direction = e_right;
-        decision = 43;
+        decision = 47;
     }else if(
         !will_collide_left
         && left_area == max(down_area, up_area, right_area, left_area)
         && !headon_death_left
     ){
         direction = e_left;
-        decision = 44;
+        decision = 48;
     }
     
     // Move towards largest area, checking for collisions
@@ -502,45 +550,45 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
         && down_area == max(down_area, up_area, right_area, left_area)
     ){
         direction = e_down;
-        decision = 45;
+        decision = 49;
     }else if(
         !will_collide_up
         && up_area == max(down_area, up_area, right_area, left_area)
     ){
         direction = e_up;
-        decision = 46;
+        decision = 50;
     }else if(
         !will_collide_right
         && right_area == max(down_area, up_area, right_area, left_area)
     ){
         direction = e_right;
-        decision = 47;
+        decision = 51;
     }else if(
         !will_collide_left
         && left_area == max(down_area, up_area, right_area, left_area)
     ){
         direction = e_left;
-        decision = 48;
+        decision = 52;
     }
 
     // Pray, no escape and accept headon
     else if(!will_collide_down){
         direction = e_down;
-        decision = 49;
+        decision = 53;
     }else if(!will_collide_up){
         direction = e_up;
-        decision = 50;
+        decision = 54;
     }else if(!will_collide_right){
         direction = e_right;
-        decision = 51;
+        decision = 55;
     }else if(!will_collide_left){
         direction = e_left;
-        decision = 52;
+        decision = 56;
     
     // Accept death
     }else{
         direction = e_up;
-        decision = 53;
+        decision = 57;
     }
 
     // Log data
