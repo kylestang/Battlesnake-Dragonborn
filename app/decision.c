@@ -49,6 +49,7 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
     int down_area = 0;
     if(!will_collide_down){
         down_area = check_area(game, board, you, down, coord_array(max_area, gone_pointer), 0, 0, max_area);
+        if(hazard_down){down_area = down_area / 2 + 1;}
         
         char p_data[STRING_SIZE];
         snprintf(p_data, STRING_SIZE, "max_down: %d down_area: %d", max_area, down_area);
@@ -58,6 +59,7 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
     int up_area = 0;
     if(!will_collide_up){
         up_area = check_area(game, board, you, up, coord_array(max_area, gone_pointer), 0, 0, max_area);
+        if(hazard_up){up_area = up_area / 2 + 1;}
 
         char p_data[STRING_SIZE];
         snprintf(p_data, STRING_SIZE, "max_up: %d up_area: %d", max_area, up_area);
@@ -67,6 +69,7 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
     int right_area = 0;
     if(!will_collide_right){
         right_area = check_area(game, board, you, right, coord_array(max_area, gone_pointer), 0, 0, max_area);
+        if(hazard_right){right_area = right_area / 2 + 1;}
 
         char p_data[STRING_SIZE];
         snprintf(p_data, STRING_SIZE, "max_right: %d right_area: %d", max_area, right_area);
@@ -76,6 +79,7 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
     int left_area = 0;
     if(!will_collide_left){
         left_area = check_area(game, board, you, left, coord_array(max_area, gone_pointer), 0, 0, max_area);
+        if(hazard_left){left_area = left_area / 2 + 1;}
 
         char p_data[STRING_SIZE];
         snprintf(p_data, STRING_SIZE, "max_left: %d left_area: %d", max_area, left_area);
