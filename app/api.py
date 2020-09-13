@@ -1,25 +1,24 @@
 import json
 from bottle import HTTPResponse
 
-def ping_response():
-    return HTTPResponse(
-        status=200
-    )
-
-def start_response(color, head_type, tail_type):
-    assert type(color) is str, \
-        "Color value must be string"
-
+def ping_response(api_version, author, color, head, tail):
     return HTTPResponse(
         status=200,
         headers={
             "Content-Type": "application/json"
         },
         body=json.dumps({
+            "apiversion": api_version,
+            "author": author,
             "color": color,
-            "headType": head_type,
-            "tailType": tail_type
+            "head": head,
+            "tail": tail
         })
+    )
+
+def start_response():
+    return HTTPResponse(
+        status=200,
     )
 
 def move_response(move):

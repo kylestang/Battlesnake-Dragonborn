@@ -4,8 +4,8 @@
 
 // Stores an array of adjacent tiles in order down, up, right, left
 void get_adjacent(Coordinate pos, CoordArray *adjacent){
-    adjacent->p_elements[0] = coordinate(pos.x, pos.y + 1);
-    adjacent->p_elements[1] = coordinate(pos.x, pos.y - 1);
+    adjacent->p_elements[0] = coordinate(pos.x, pos.y - 1);
+    adjacent->p_elements[1] = coordinate(pos.x, pos.y + 1);
     adjacent->p_elements[2] = coordinate(pos.x + 1, pos.y);
     adjacent->p_elements[3] = coordinate(pos.x - 1, pos.y);
 
