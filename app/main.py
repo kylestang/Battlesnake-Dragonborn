@@ -65,7 +65,7 @@ def static(path):
     return bottle.static_file(path, root='static/')
 
 
-@bottle.post('/battlesnake/mithrandir/ping')
+@bottle.get('/battlesnake/mithrandir')
 def ping():
     
     api_version = "1"

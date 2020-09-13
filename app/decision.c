@@ -201,7 +201,7 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
 
     // Move towards closest food if game opening or starving, checking for collisions, can_escape and near_head
     }else if(
-        closest_food.size == 1 && closest_food.p_elements[0].y > current_pos.y
+        closest_food.size == 1 && closest_food.p_elements[0].y < current_pos.y
         && (health <= STARVING_THRESHOLD || turn <= OPENING_TURNS)
         && !will_collide_down
         && can_escape_down
@@ -210,7 +210,7 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
         direction = e_down;
         decision = 9;
     }else if(
-        closest_food.size == 1 && closest_food.p_elements[0].y < current_pos.y
+        closest_food.size == 1 && closest_food.p_elements[0].y > current_pos.y
         && (health <= STARVING_THRESHOLD || turn <= OPENING_TURNS)
         && !will_collide_up
         && can_escape_up
@@ -239,7 +239,7 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
 
     // Move towards closest food, avoid walls, checking for collisions, can_escape and near_head
     }else if(
-        closest_food.size == 1 && closest_food.p_elements[0].y > current_pos.y 
+        closest_food.size == 1 && closest_food.p_elements[0].y < current_pos.y 
         && !will_collide_down
         && can_escape_down
         && !against_wall_down
@@ -248,7 +248,7 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
         direction = e_down;
         decision = 13;
     }else if(
-        closest_food.size == 1 && closest_food.p_elements[0].y < current_pos.y
+        closest_food.size == 1 && closest_food.p_elements[0].y > current_pos.y
         && !will_collide_up
         && can_escape_up
         && !against_wall_up
@@ -277,7 +277,7 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
     
     // Move towards closest snake that I can kill, avoid walls, checking for collisions, can_escape, and near_head
     }else if(
-        closest_weak_head.size == 1 && closest_weak_head.p_elements[0].y > current_pos.y
+        closest_weak_head.size == 1 && closest_weak_head.p_elements[0].y < current_pos.y
         && !will_collide_down
         && can_escape_down
         && !against_wall_down
@@ -286,7 +286,7 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
         direction = e_down;
         decision = 17;
     }else if(
-        closest_weak_head.size == 1 && closest_weak_head.p_elements[0].y < current_pos.y
+        closest_weak_head.size == 1 && closest_weak_head.p_elements[0].y > current_pos.y
         && !will_collide_up
         && can_escape_up
         && !against_wall_up
