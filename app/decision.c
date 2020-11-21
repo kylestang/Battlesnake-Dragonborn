@@ -22,10 +22,6 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
     int health = you->health;
 
     // Data
-    // closest_food
-    Coordinate closest_food_pointer[1];
-    CoordArray closest_food = find_closest_food(game, board, you, current_pos, turn, STARVING_THRESHOLD, OPENING_TURNS, closest_food_pointer);
-
     // closest_weak_head
     Coordinate closest_head_pointer[1];
     CoordArray closest_weak_head = find_weak_head(game, board, you, current_pos, closest_head_pointer);
@@ -198,83 +194,6 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
     ){
         direction = e_left;
         decision = 8;
-
-    // Move towards closest food if game opening or starving, checking for collisions, can_escape and near_head
-    }else if(
-        closest_food.size == 1 && closest_food.p_elements[0].y < current_pos.y
-        && (health <= STARVING_THRESHOLD || turn <= OPENING_TURNS)
-        && !will_collide_down
-        && can_escape_down
-        && !near_head_down
-    ){
-        direction = e_down;
-        decision = 9;
-    }else if(
-        closest_food.size == 1 && closest_food.p_elements[0].y > current_pos.y
-        && (health <= STARVING_THRESHOLD || turn <= OPENING_TURNS)
-        && !will_collide_up
-        && can_escape_up
-        && !near_head_up
-    ){
-        direction = e_up;
-        decision = 10;
-    }else if(
-        closest_food.size == 1 && closest_food.p_elements[0].x > current_pos.x
-        && (health <= STARVING_THRESHOLD || turn <= OPENING_TURNS)
-        && !will_collide_right
-        && can_escape_right
-        && !near_head_right
-    ){
-        direction = e_right;
-        decision = 11;
-    }else if(
-        closest_food.size == 1 && closest_food.p_elements[0].x < current_pos.x
-        && (health <= STARVING_THRESHOLD || turn <= OPENING_TURNS)
-        && !will_collide_left
-        && can_escape_left
-        && !near_head_left
-    ){
-        direction = e_left;
-        decision = 12;
-
-    // Move towards closest food, avoid walls, checking for collisions, can_escape and near_head
-    }else if(
-        closest_food.size == 1 && closest_food.p_elements[0].y < current_pos.y 
-        && !will_collide_down
-        && can_escape_down
-        && !against_wall_down
-        && !near_head_down
-    ){
-        direction = e_down;
-        decision = 13;
-    }else if(
-        closest_food.size == 1 && closest_food.p_elements[0].y > current_pos.y
-        && !will_collide_up
-        && can_escape_up
-        && !against_wall_up
-        && !near_head_up
-    ){
-        direction = e_up;
-        decision = 14;
-    }else if(
-        closest_food.size == 1 && closest_food.p_elements[0].x > current_pos.x
-        && !will_collide_right
-        && can_escape_right
-        && !against_wall_right
-        && !near_head_right
-    ){
-        direction = e_right;
-        decision = 15;
-    }else if(
-        closest_food.size == 1 && closest_food.p_elements[0].x < current_pos.x
-        && !will_collide_left
-        && can_escape_left
-        && !against_wall_left
-        && !near_head_left
-    ){
-        direction = e_left;
-        decision = 16;
-    
     // Move towards closest snake that I can kill, avoid walls, checking for collisions, can_escape, and near_head
     }else if(
         closest_weak_head.size == 1 && closest_weak_head.p_elements[0].y < current_pos.y
@@ -597,10 +516,6 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
 
     // Log data
     char data[STRING_SIZE];
-    if(closest_food.size == 1){
-        snprintf(data, STRING_SIZE, "food: x:%d y:%d", closest_food.p_elements[0].x, closest_food.p_elements[0].y);
-        log_data(game->p_id, data);
-    }
     snprintf(data, STRING_SIZE, "health: %d\ndecision: %d\npos: x:%d y:%d\ndir: %d\nturn: %d\n",
         health, decision, current_pos.x, current_pos.y, direction, turn);
     log_data(game->p_id, data);

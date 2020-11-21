@@ -13,29 +13,6 @@ void get_adjacent(Coordinate pos, CoordArray *adjacent){
     adjacent->max_size = 4;
 }
 
-// Returns an array of size 1 containing the closest food, if it exists
-CoordArray find_closest_food(Game *game, Board *board, Battlesnake *you, Coordinate pos, int turn, int starving_threshold, int opening_turns, Coordinate* closest_food_pointer){
-    Coordinate food;
-    CoordArray closest_food = coord_array(1, closest_food_pointer);
-    int distance, closest_distance;
-
-    for(int i = 0; i < board->food.size; i++){
-        food = board->food.p_elements[i];
-
-        if((!distance_from_wall(board, food, 0) || you->health <= starving_threshold || turn <= opening_turns) && !contains_coord(board->hazards, food)){
-            distance = abs(food.x - pos.x) + abs(food.y - pos.y);
-            if(closest_food.size == 0){
-                append_coord(&closest_food, food, game->p_id);
-                closest_distance = distance;
-            } else if(distance < closest_distance){
-                closest_food.p_elements[0] = food;
-                closest_distance = distance;
-            }
-        }
-    }
-    return closest_food;
-}
-
 // Returns an array of size 1 containing the closest weak head, if it exists
 CoordArray find_weak_head(Game *game, Board *board, Battlesnake *you, Coordinate pos, Coordinate* closest_head_pointer){
     Battlesnake snake;
@@ -102,19 +79,6 @@ int check_area(Game *game, Board *board, Battlesnake *you, Coordinate pos, Coord
 
     if(contains_coord(board->food, pos)){
         food_count++;
-    }
-
-    for(int i = 0; i < board->snakes.size; i++){
-        snake = board->snakes.p_elements[i];
-        for(int j = 0; j <= max_area; j++){
-            if(
-                ((snake.id == you->id && current_area - food_count >= j)
-                || (snake.id != you->id && current_area >= j))
-                && equals_coord(pos, snake.body.p_elements[snake.length - j - 1])
-            ){
-                return max_area;
-            }
-        }
     }
 
     if(will_collide(board, pos, gone)){
