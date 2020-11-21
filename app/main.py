@@ -65,7 +65,7 @@ def static(path):
     return bottle.static_file(path, root='static/')
 
 
-@bottle.get('/battlesnake/mithrandir')
+@bottle.get('/battlesnake/blue1')
 def ping():
     
     api_version = "1"
@@ -77,13 +77,13 @@ def ping():
     return ping_response(api_version, author, color, head, tail)
 
 
-@bottle.post('/battlesnake/mithrandir/start')
+@bottle.post('/battlesnake/blue1/start')
 def start():
 
     return start_response()
 
 
-@bottle.post('/battlesnake/mithrandir/move')
+@bottle.post('/battlesnake/blue1/move')
 def move():
     data = bottle.request.json
 
@@ -149,7 +149,7 @@ def move():
     return move_response(direction)
 
 
-@bottle.post('/battlesnake/mithrandir/end')
+@bottle.post('/battlesnake/blue1/end')
 def end():
 
     return end_response()
@@ -162,6 +162,6 @@ if __name__ == '__main__':
     bottle.run(
         application,
         host=os.getenv('IP', '0.0.0.0'),
-        port=os.getenv('PORT', '25567'),
+        port=os.getenv('PORT', '25570'),
         debug=os.getenv('DEBUG', True)
     )
