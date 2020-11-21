@@ -70,9 +70,9 @@ def ping():
     
     api_version = "1"
     author = "Kyle Stang"
-    color = "#808080"
-    head = "smile"
-    tail = "bolt"
+    color = "#2343E0"
+    head = "bfl-jackolantern"
+    tail = "bfl-pumpkin"
 
     return ping_response(api_version, author, color, head, tail)
 
