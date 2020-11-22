@@ -39,7 +39,7 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
     bool hazard_left = contains_coord(board->hazards, left);
 
     // area_size, check_area
-    int max_area = you->length < MAX_SEARCH ? you->length : MAX_SEARCH;
+    int max_area = MAX_SEARCH;
     Coordinate *gone_pointer = malloc(max_area * sizeof(Coordinate));
 
     int down_area = 0;
