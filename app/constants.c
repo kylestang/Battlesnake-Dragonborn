@@ -1,7 +1,7 @@
 #include <stdbool.h>
 
 // Constants
-const int MAX_SEARCH = 35;
+const int MAX_SEARCH = 26;
 const int STARVING_THRESHOLD = 25;
 const int SAFE_DISTANCE = 2;
 const int OPENING_TURNS = 20;
