@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <omp.h>
 #include "functions.h"
 #include "constants.h"
 
@@ -47,46 +48,44 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
     Coordinate *gone_pointer = malloc(max_area * sizeof(Coordinate));
 
     int down_area = 0;
-    if(!will_collide_down){
-        down_area = check_area(game, board, you, down, coord_array(max_area, gone_pointer), 0, 0, max_area);
-        if(hazard_down){down_area = down_area / 2 + 1;}
-        
-        char p_data[STRING_SIZE];
-        snprintf(p_data, STRING_SIZE, "max_down: %d down_area: %d", max_area, down_area);
-        log_data(game->p_id, p_data);
-    }
-
     int up_area = 0;
-    if(!will_collide_up){
-        up_area = check_area(game, board, you, up, coord_array(max_area, gone_pointer), 0, 0, max_area);
-        if(hazard_up){up_area = up_area / 2 + 1;}
-
-        char p_data[STRING_SIZE];
-        snprintf(p_data, STRING_SIZE, "max_up: %d up_area: %d", max_area, up_area);
-        log_data(game->p_id, p_data);
-    }
-
     int right_area = 0;
-    if(!will_collide_right){
-        right_area = check_area(game, board, you, right, coord_array(max_area, gone_pointer), 0, 0, max_area);
-        if(hazard_right){right_area = right_area / 2 + 1;}
-
-        char p_data[STRING_SIZE];
-        snprintf(p_data, STRING_SIZE, "max_right: %d right_area: %d", max_area, right_area);
-        log_data(game->p_id, p_data);
-    }
-
     int left_area = 0;
-    if(!will_collide_left){
-        left_area = check_area(game, board, you, left, coord_array(max_area, gone_pointer), 0, 0, max_area);
-        if(hazard_left){left_area = left_area / 2 + 1;}
 
-        char p_data[STRING_SIZE];
-        snprintf(p_data, STRING_SIZE, "max_left: %d left_area: %d", max_area, left_area);
-        log_data(game->p_id, p_data);
+    #pragma omp parallel num_threads(4)
+    {
+        if(!will_collide_down && omp_get_thread_num() == 0){
+            down_area = check_area(game, board, you, down, coord_array(max_area, gone_pointer), 0, 0, max_area);
+            if(hazard_down){down_area = down_area / 2 + 1;}
+        }
+        
+        else if(!will_collide_up && omp_get_thread_num() == 1){
+            up_area = check_area(game, board, you, up, coord_array(max_area, gone_pointer), 0, 0, max_area);
+            if(hazard_up){up_area = up_area / 2 + 1;}
+        }
+        
+        else if(!will_collide_right && omp_get_thread_num() == 2){
+            right_area = check_area(game, board, you, right, coord_array(max_area, gone_pointer), 0, 0, max_area);
+            if(hazard_right){right_area = right_area / 2 + 1;}
+        }
+
+        else if(!will_collide_left && omp_get_thread_num() == 3){
+            left_area = check_area(game, board, you, left, coord_array(max_area, gone_pointer), 0, 0, max_area);
+            if(hazard_left){left_area = left_area / 2 + 1;}
+        }
     }
 
     free(gone_pointer);
+
+    char p_data[STRING_SIZE];
+    snprintf(p_data, STRING_SIZE, "max_down: %d down_area: %d", max_area, down_area);
+    log_data(game->p_id, p_data);
+    snprintf(p_data, STRING_SIZE, "max_up: %d up_area: %d", max_area, up_area);
+    log_data(game->p_id, p_data);
+    snprintf(p_data, STRING_SIZE, "max_right: %d right_area: %d", max_area, right_area);
+    log_data(game->p_id, p_data);
+    snprintf(p_data, STRING_SIZE, "max_left: %d left_area: %d", max_area, left_area);
+    log_data(game->p_id, p_data);
 
     // can_escape
     bool can_escape_down = can_escape(you, down_area, MAX_SEARCH);
