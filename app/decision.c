@@ -52,7 +52,7 @@ int decision(Game *game, Board *board, Battlesnake *you, int turn){
     int right_area = 0;
     int left_area = 0;
 
-    #pragma omp parallel num_threads(4)
+    #pragma omp parallel private(game, board, you) num_threads(4)
     {
         if(!will_collide_down && omp_get_thread_num() == 0){
             down_area = check_area(game, board, you, down, coord_array(max_area, gone_pointer), 0, 0, max_area);
